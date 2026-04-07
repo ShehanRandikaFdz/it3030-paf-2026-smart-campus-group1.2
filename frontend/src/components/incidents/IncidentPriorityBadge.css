@@ -1,0 +1,13 @@
+.priority-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.priority-low { background: rgba(107, 114, 128, 0.15); color: #6b7280; }
+.priority-medium { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.priority-high { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.priority-critical { background: rgba(239, 68, 68, 0.15); color: #ef4444; }

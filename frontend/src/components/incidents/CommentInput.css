@@ -1,0 +1,40 @@
+.comment-input {
+  margin-top: 16px;
+}
+.comment-input textarea {
+  width: 100%;
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: #f4f4f5;
+  padding: 14px;
+  font-size: 0.9rem;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.comment-input textarea:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.5);
+}
+.comment-input button {
+  margin-top: 10px;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.comment-input button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+.comment-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
