@@ -1,0 +1,15 @@
+package com.smartcampus.module_c.repository;
+
+import com.smartcampus.module_c.entity.IncidentAttachment;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface AttachmentRepository extends JpaRepository<IncidentAttachment, Long> {
+
+    List<IncidentAttachment> findByIncidentIdOrderByUploadedAtDesc(Long incidentId);
+
+    long countByIncidentId(Long incidentId);
+}

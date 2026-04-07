@@ -1,0 +1,66 @@
+.incident-card {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.incident-card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
+}
+.incident-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.incident-card-badges {
+  display: flex;
+  gap: 8px;
+}
+.incident-card-category {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.incident-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f4f4f5;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+.incident-card-location {
+  font-size: 0.85rem;
+  color: #a78bfa;
+  margin: 0 0 8px 0;
+}
+.incident-card-description {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  margin: 0 0 16px 0;
+  line-height: 1.5;
+}
+.incident-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 12px;
+}
+.incident-card-time {
+  font-size: 0.8rem;
+  color: #71717a;
+}
+.incident-card-stats {
+  display: flex;
+  gap: 12px;
+}
+.incident-card-stat {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+}

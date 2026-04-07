@@ -1,0 +1,105 @@
+.incident-detail-page { padding: 24px; max-width: 1200px; margin: 0 auto; }
+.detail-loading, .detail-error {
+  text-align: center;
+  padding: 64px;
+  font-size: 1rem;
+}
+.detail-loading { color: #a78bfa; }
+.detail-error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 16px;
+}
+
+.detail-header { margin-bottom: 32px; }
+.detail-badges { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; }
+.detail-category {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+}
+.detail-header h1 {
+  font-size: 1.6rem;
+  color: #f4f4f5;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+}
+.detail-meta {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+.detail-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-section {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.detail-section h3 {
+  font-size: 1rem;
+  color: #f4f4f5;
+  margin: 0 0 16px 0;
+}
+.detail-description {
+  color: #d4d4d8;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  margin: 0;
+}
+.resolution-section { border-left: 3px solid #10b981; }
+.rejection-section { border-left: 3px solid #ef4444; }
+.resolution-section p, .rejection-section p {
+  color: #d4d4d8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.upload-btn {
+  margin-top: 12px;
+}
+
+/* Sidebar */
+.sidebar-card {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.sidebar-card h4 {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px 0;
+}
+.sidebar-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.sidebar-item:last-child { border-bottom: none; }
+.sidebar-label { font-size: 0.8rem; color: #71717a; }
+.sidebar-value { font-size: 0.85rem; color: #d4d4d8; font-weight: 500; }
+.sidebar-value.small { font-size: 0.75rem; }
+
+@media (max-width: 900px) {
+  .detail-body { grid-template-columns: 1fr; }
+}
