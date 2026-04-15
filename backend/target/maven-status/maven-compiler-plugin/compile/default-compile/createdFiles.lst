@@ -1,5 +1,6 @@
 com\smartcampus\module_c\repository\CommentRepository.class
 com\smartcampus\module_c\repository\AttachmentRepository.class
+com\smartcampus\config\DotEnvConfig.class
 com\smartcampus\module_c\service\CommentService.class
 com\smartcampus\module_c\exception\FileTooLargeException.class
 com\smartcampus\module_b\entity\Booking$BookingBuilder.class
