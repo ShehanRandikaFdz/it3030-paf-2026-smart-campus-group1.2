@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMyBookings, cancelBooking } from '../../api/bookingsApi';
 import BookingCard from '../../components/bookings/BookingCard';
 import BookingStatusBadge from '../../components/bookings/BookingStatusBadge';
+import BookingFormModal from '../../components/bookings/BookingFormModal';
 import '../bookings/BookingStyles.css';
 
 /**
@@ -13,6 +14,8 @@ const BookingListPage = () => {
   const [bookings, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showFormModal, setShowFormModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -27,7 +30,7 @@ const BookingListPage = () => {
       const response = await getMyBookings({});
       if (response.data.success) {
         setBookings(response.data.data);
-        filterBookings(response.data.data, statusFilter);
+        filterBookings(response.data.data, statusFilter, searchTerm);
       }
     } catch (err) {
       setError('Failed to load bookings');
@@ -36,17 +39,38 @@ const BookingListPage = () => {
     }
   };
 
-  const filterBookings = (allBookings, status) => {
+  const filterBookings = (allBookings, status, search) => {
+    let filtered = allBookings;
+    
+    // Apply status filter
     if (status) {
-      setFilteredBookings(allBookings.filter(b => b.status === status));
-    } else {
-      setFilteredBookings(allBookings);
+      filtered = filtered.filter(b => b.status === status);
     }
+    
+    // Apply search filter
+    if (search && search.trim()) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(b => 
+        b.title.toLowerCase().includes(searchLower) ||
+        b.purpose.toLowerCase().includes(searchLower) ||
+        b.resourceName?.toLowerCase().includes(searchLower) ||
+        b.userEmail.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    setFilteredBookings(filtered);
   };
 
   const handleStatusFilter = (status) => {
-    setStatusFilter(status === statusFilter ? null : status);
-    filterBookings(bookings, status === statusFilter ? null : status);
+    const newStatus = status === statusFilter ? null : status;
+    setStatusFilter(newStatus);
+    filterBookings(bookings, newStatus, searchTerm);
+  };
+
+  const handleSearch = (e) => {
+    const search = e.target.value;
+    setSearchTerm(search);
+    filterBookings(bookings, statusFilter, search);
   };
 
   const handleCancelBooking = async (id) => {
@@ -62,6 +86,13 @@ const BookingListPage = () => {
     }
   };
 
+  const handleBookingCreated = () => {
+    setSuccessMessage('Booking created successfully! It is now pending admin review.');
+    setShowFormModal(false);
+    loadBookings();
+    setTimeout(() => setSuccessMessage(''), 3000);
+  };
+
   return (
     <div className="list-page">
       <div className="page-header">
@@ -71,7 +102,7 @@ const BookingListPage = () => {
         </div>
         <button 
           className="btn btn-primary btn-lg"
-          onClick={() => navigate('/bookings/new')}
+          onClick={() => setShowFormModal(true)}
         >
           + New Booking
         </button>
@@ -79,6 +110,16 @@ const BookingListPage = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
+
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="🔍 Search bookings by title, resource, or email..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="search-input"
+        />
+      </div>
 
       <div className="filter-bar">
         <h3>Filter by Status:</h3>
@@ -102,7 +143,7 @@ const BookingListPage = () => {
           <p>No bookings found</p>
           <button 
             className="btn btn-primary"
-            onClick={() => navigate('/bookings/new')}
+            onClick={() => setShowFormModal(true)}
           >
             Create your first booking
           </button>
@@ -119,6 +160,13 @@ const BookingListPage = () => {
             />
           ))}
         </div>
+      )}
+
+      {showFormModal && (
+        <BookingFormModal
+          onClose={() => setShowFormModal(false)}
+          onSuccess={handleBookingCreated}
+        />
       )}
     </div>
   );

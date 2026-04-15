@@ -6,7 +6,6 @@ import IncidentFormPage from './pages/incidents/IncidentFormPage';
 import IncidentDetailPage from './pages/incidents/IncidentDetailPage';
 import AdminIncidentsPage from './pages/incidents/admin/AdminIncidentsPage';
 import BookingListPage from './pages/bookings/BookingListPage';
-import BookingFormPage from './pages/bookings/BookingFormPage';
 import BookingDetailPage from './pages/bookings/BookingDetailPage';
 import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
 import './App.css';
@@ -33,7 +32,6 @@ function Navbar() {
           <Link to="/incidents" className="nav-link">🎫 My Tickets</Link>
           <Link to="/incidents/new" className="nav-link">➕ Report Incident</Link>
           <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
-          <Link to="/bookings/new" className="nav-link">➕ New Booking</Link>
           {role === 'ADMIN' && (
             <>
               <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Admin Tickets</Link>
@@ -71,7 +69,6 @@ export default function App() {
             <Route path="/incidents/:id" element={<IncidentDetailPage />} />
             <Route path="/admin/incidents" element={<AdminIncidentsPage />} />
             <Route path="/bookings" element={<BookingListPage />} />
-            <Route path="/bookings/new" element={<BookingFormPage />} />
             <Route path="/bookings/:id" element={<BookingDetailPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
           </Routes>
