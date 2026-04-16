@@ -1,4 +1,5 @@
 tmp/
+/frontend/nbproject/private/
 
 target/
 *.class
@@ -11,3 +12,10 @@ TASK_RANUSHI.md
 TASK_SHASHINDI.md
 TASK_SHEHAN.md
 TASK_THISANGI.md
+
+# Build artifacts and logs
+mvn_build.log
+backend/target/
+
+# Environment files
+backend/.env

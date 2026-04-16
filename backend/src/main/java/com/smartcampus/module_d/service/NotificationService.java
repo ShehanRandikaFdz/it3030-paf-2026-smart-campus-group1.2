@@ -1,31 +1,28 @@
 package com.smartcampus.module_d.service;
 
+import com.smartcampus.module_d.dto.NotificationResponseDTO;
 import com.smartcampus.module_d.enums.NotificationType;
+import org.springframework.data.domain.Pageable;
+import java.util.List;
 import java.util.UUID;
 
-/**
- * Notification Service Interface
- * To be fully implemented by Thisangi (Module D+E)
- * This is a stub interface for module integration
- */
 public interface NotificationService {
 
-    /**
-     * Create and store a notification for a user
-     * 
-     * @param userId The target user UUID
-     * @param title Notification title
-     * @param message Notification message
-     * @param type Notification type
-     */
-    void createNotification(UUID userId, String title, String message, NotificationType type);
+    void createNotification(UUID userId, String title, String message,
+                            NotificationType type);
 
-    /**
-     * Send email notification to user
-     * 
-     * @param email Recipient email
-     * @param subject Email subject
-     * @param body Email body
-     */
+    void createNotification(UUID userId, String title, String message,
+                            NotificationType type, Long relatedId, String relatedType);
+
+    List<NotificationResponseDTO> getNotificationsForUser(UUID userId, Pageable pageable);
+
+    long getUnreadCount(UUID userId);
+
+    void markAsRead(Long notificationId, UUID userId);
+
+    void markAllAsRead(UUID userId);
+
+    void deleteNotification(Long notificationId, UUID userId);
+
     void sendEmail(String email, String subject, String body);
 }
