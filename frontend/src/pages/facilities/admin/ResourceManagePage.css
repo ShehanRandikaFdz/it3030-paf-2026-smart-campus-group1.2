@@ -1,0 +1,69 @@
+.admin-manage-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.manage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.manage-header h1 {
+    color: #fff;
+    margin: 0;
+}
+.create-btn {
+    background: #10b981;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.manage-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.manage-table th, .manage-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+.manage-table th {
+    background: #2a2a2a;
+    color: #aaa;
+    font-weight: 600;
+}
+.manage-table td {
+    color: #eee;
+}
+.status-select {
+    padding: 0.4rem;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 4px;
+}
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+}
+.action-edit {
+    color: #f59e0b;
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #f59e0b;
+    border-radius: 4px;
+}
+.action-delete {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
