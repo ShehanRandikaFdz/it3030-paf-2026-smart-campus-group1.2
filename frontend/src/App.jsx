@@ -15,12 +15,17 @@ import {
   signOut,
 } from './utils/axiosInstance';
 import { supabase } from './utils/supabase';
+
+import NotificationBell from './components/notifications/NotificationBell';
+
 import IncidentListPage from './pages/incidents/IncidentListPage';
 import IncidentFormPage from './pages/incidents/IncidentFormPage';
 import IncidentDetailPage from './pages/incidents/IncidentDetailPage';
 import AdminIncidentsPage from './pages/incidents/admin/AdminIncidentsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
+import './components/notifications/Notifications.css';
+
 
 import './App.css';
 
@@ -53,6 +58,7 @@ function Navbar() {
         </div>
 
         <div className="navbar-user">
+          <NotificationBell />
           <span className="user-email">{currentUser?.email || ''}</span>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
@@ -62,7 +68,6 @@ function Navbar() {
     </nav>
   );
 }
-
 
 function AuthCallbackPage() {
   React.useEffect(() => {
@@ -101,7 +106,51 @@ function AuthCallbackPage() {
     finishLogin();
   }, []);
 
-  return <div>Signing you in...</div>;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100%',
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+        fontSize: '1rem',
+        color: '#f4f4f5',
+        backgroundColor: '#0f0f17',
+        margin: 0,
+        padding: 0,
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '16px',
+        }}
+      >
+        <div
+          style={{
+            width: '40px',
+            height: '40px',
+            border: '3px solid rgba(139, 92, 246, 0.3)',
+            borderTopColor: '#a78bfa',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }}
+        />
+        <span>Signing you in...</span>
+        <style>
+          {`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}
+        </style>
+      </div>
+    </div>
+  );
 }
 
 function AuthGate() {
@@ -177,9 +226,7 @@ function AuthGate() {
     };
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   if (!authenticated) {
     return <Navigate to="/login" replace />;
@@ -222,6 +269,7 @@ export default function App() {
 
             <Route element={<AdminRoute />}>
               <Route path="/admin/incidents" element={<AdminIncidentsPage />} />
+              {/* <Route path="/admin/users" element={<UserManagePage />} /> */}
             </Route>
           </Route>
         </Routes>

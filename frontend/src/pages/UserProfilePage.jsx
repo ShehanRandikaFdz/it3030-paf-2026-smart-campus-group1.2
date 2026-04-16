@@ -1,118 +1,65 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { getCurrentUser } from '../utils/axiosInstance';
-import { supabase } from '../utils/supabase';
 
 export default function UserProfilePage() {
     const currentUser = getCurrentUser();
-    const [sessionInfo, setSessionInfo] = React.useState(null);
-
-    React.useEffect(() => {
-        const loadSession = async () => {
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
-
-            if (session) {
-                setSessionInfo({
-                    accessToken: session.access_token,
-                    expiresAt: session.expires_at,
-                    provider: session.user?.app_metadata?.provider || 'unknown',
-                    fullName: session.user?.user_metadata?.full_name || '',
-                    avatar: session.user?.user_metadata?.avatar_url || '',
-                    emailVerified: session.user?.email_confirmed_at || null,
-                });
-            }
-        };
-
-        loadSession();
-    }, []);
 
     if (!currentUser?.email) {
         return <Navigate to="/login" replace />;
     }
 
     return (
-        <div style={{ padding: '32px', maxWidth: '900px', margin: '0 auto' }}>
-            <h1>User Profile</h1>
-            <p>This page shows the logged-in user details.</p>
+        <div className="profile-page">
+            <div className="profile-container">
+                <h1 className="profile-title">User Profile</h1>
+                <p className="profile-subtitle">Your account information</p>
 
-            <div
-                style={{
-                    background: '#ffffff',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                    marginTop: '20px',
-                    color: '#1f2937'
-                }}
-            >
-                <h2>Basic Details</h2>
+                <div className="profile-card">
+                    <h2>Profile Details</h2>
 
-                <p><strong>User ID:</strong> {currentUser.id || '-'}</p>
-                <p><strong>Email:</strong> {currentUser.email || '-'}</p>
-                <p><strong>Role:</strong> {currentUser.role || '-'}</p>
+                    <div className="profile-field">
+                        <span className="profile-label">Email:</span>
+                        <span className="profile-value">{currentUser.email || '-'}</span>
+                    </div>
 
-                {sessionInfo?.fullName && (
-                    <p><strong>Full Name:</strong> {sessionInfo.fullName}</p>
-                )}
+                    <div className="profile-field">
+                        <span className="profile-label">Role:</span>
+                        <span className="profile-value profile-role">{currentUser.role || 'USER'}</span>
+                    </div>
 
-                {sessionInfo?.provider && (
-                    <p><strong>Login Provider:</strong> {sessionInfo.provider}</p>
-                )}
+                    {currentUser.fullName && (
+                        <div className="profile-field">
+                            <span className="profile-label">Full Name:</span>
+                            <span className="profile-value">{currentUser.fullName}</span>
+                        </div>
+                    )}
 
-                {sessionInfo?.emailVerified && (
-                    <p><strong>Email Verified At:</strong> {sessionInfo.emailVerified}</p>
-                )}
+                    {currentUser.provider && (
+                        <div className="profile-field">
+                            <span className="profile-label">Login Provider:</span>
+                            <span className="profile-value">{currentUser.provider}</span>
+                        </div>
+                    )}
 
-                {sessionInfo?.avatar && (
-                    <div style={{ marginTop: '16px' }}>
-                        <strong>Profile Picture:</strong>
-                        <div style={{ marginTop: '10px' }}>
+                    {currentUser.emailVerified && (
+                        <div className="profile-field">
+                            <span className="profile-label">Email Verified:</span>
+                            <span className="profile-value">{currentUser.emailVerified}</span>
+                        </div>
+                    )}
+
+                    {currentUser.avatar && (
+                        <div className="profile-avatar-section">
+                            <span className="profile-label">Profile Picture:</span>
                             <img
-                                src={sessionInfo.avatar}
+                                src={currentUser.avatar}
                                 alt="Profile"
-                                style={{
-                                    width: '88px',
-                                    height: '88px',
-                                    borderRadius: '50%',
-                                    objectFit: 'cover',
-                                    border: '2px solid #ddd',
-                                }}
+                                className="profile-avatar"
                             />
                         </div>
-                    </div>
-                )}
-            </div>
-
-            <div
-                style={{
-                    background: '#ffffff',
-                    borderRadius: '16px',
-                    padding: '24px',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-                    marginTop: '20px',
-                    color: '#1f2937'
-                }}
-            >
-                <h2>Session Details</h2>
-
-                <p><strong>Access Token:</strong></p>
-                <div
-                    style={{
-                        background: '#f6f6f6',
-                        padding: '12px',
-                        borderRadius: '10px',
-                        wordBreak: 'break-all',
-                        fontSize: '13px',
-                    }}
-                >
-                    {sessionInfo?.accessToken || 'No active token'}
+                    )}
                 </div>
-
-                <p style={{ marginTop: '16px' }}>
-                    <strong>Expires At:</strong> {sessionInfo?.expiresAt || '-'}
-                </p>
             </div>
         </div>
     );
