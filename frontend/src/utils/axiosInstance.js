@@ -1,59 +1,93 @@
 import axios from 'axios';
+import { supabase } from './supabase';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8085',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Simulated user identity — replace with real auth later
-const DEMO_USER = {
-  id: '11111111-1111-1111-1111-111111111111',
-  email: 'student1@campus.lk',
-  role: 'USER',
-};
-
-const DEMO_ADMIN = {
-  id: '33333333-3333-3333-3333-333333333333',
-  email: 'admin@campus.lk',
-  role: 'ADMIN',
-};
-
-const DEMO_TECHNICIAN = {
-  id: '22222222-2222-2222-2222-222222222222',
-  email: 'tech1@campus.lk',
-  role: 'TECHNICIAN',
-};
-
-// Get current simulated user from localStorage or default to USER
 export function getCurrentUser() {
-  const stored = localStorage.getItem('smartcampus_role');
-  if (stored === 'ADMIN') return DEMO_ADMIN;
-  if (stored === 'TECHNICIAN') return DEMO_TECHNICIAN;
-  return DEMO_USER;
+  const raw = localStorage.getItem('user');
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error('Failed to parse user from localStorage:', error);
+    return null;
+  }
 }
 
-export function setCurrentRole(role) {
-  localStorage.setItem('smartcampus_role', role);
+export function setAuthData(user) {
+  localStorage.setItem('user', JSON.stringify(user));
 }
 
-// Inject user headers on every request
-axiosInstance.interceptors.request.use((config) => {
-  const user = getCurrentUser();
-  config.headers['X-User-Id'] = user.id;
-  config.headers['X-User-Email'] = user.email;
-  config.headers['X-User-Role'] = user.role;
-  return config;
-});
+export function clearAuthData() {
+  localStorage.removeItem('user');
+}
 
-// Response interceptor for error handling
+export async function signInWithGoogle() {
+  const redirectTo = `${window.location.origin}/auth/callback`;
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    console.error('Google sign-in error:', error.message);
+  }
+}
+
+export async function signOut() {
+  await supabase.auth.signOut();
+  clearAuthData();
+}
+
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const token = session?.access_token;
+    const rawUser = localStorage.getItem('user');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (user?.id) {
+      config.headers['X-User-Id'] = user.id;
+    }
+
+    if (user?.email) {
+      config.headers['X-User-Email'] = user.email;
+    }
+
+    if (user?.role) {
+      config.headers['X-User-Role'] = user.role;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const message = error.response?.data?.message || error.message || 'An error occurred';
-    console.error('API Error:', message);
+  async (error) => {
+    if (error.response?.status === 401) {
+      await signOut();
+      window.location.href = '/login';
+    }
+
     return Promise.reject(error);
   }
 );
