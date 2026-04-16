@@ -1,5 +1,8 @@
 package com.smartcampus.common;
 
+import com.smartcampus.module_b.exception.BookingConflictException;
+import com.smartcampus.module_b.exception.InvalidBookingStatusException;
+import com.smartcampus.module_b.exception.ResourceNotAvailableException;
 import com.smartcampus.module_c.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -71,6 +74,26 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleMaxUploadSize(MaxUploadSizeExceededException ex) {
         return ResponseEntity.badRequest()
                 .body(ApiResponse.error("File size exceeds the maximum allowed limit"));
+    }
+
+    // =============== Module B: Booking Exceptions ===============
+
+    @ExceptionHandler(BookingConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBookingConflict(BookingConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceNotAvailableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotAvailable(ResourceNotAvailableException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidBookingStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidBookingStatus(InvalidBookingStatusException ex) {
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
