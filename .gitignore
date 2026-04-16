@@ -1,5 +1,8 @@
 tmp/
 
+target/
+*.class
+
 # Task and documentation files
 CONTINUE_INSTRUCTIONS.md
 MODULE_B_IMPLEMENTATION.md
