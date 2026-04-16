@@ -23,4 +23,6 @@ public interface NotificationService {
     void markAllAsRead(UUID userId);
 
     void deleteNotification(Long notificationId, UUID userId);
+
+    void sendEmail(String email, String subject, String body);
 }

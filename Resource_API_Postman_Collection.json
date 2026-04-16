@@ -1,0 +1,188 @@
+{
+  "info": {
+    "name": "Module A - Facilities & Assets (Ranushi)",
+    "description": "API endpoints for the Facilities & Assets Catalogue (Resources) Module.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Resource (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-User-Role", "value": "ADMIN" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Computer Lab 01\",\n  \"type\": \"LAB\",\n  \"capacity\": 60,\n  \"location\": \"Block A, Floor 1\",\n  \"description\": \"Main computer lab.\",\n  \"availabilityStart\": \"08:00:00\",\n  \"availabilityEnd\": \"18:00:00\",\n  \"availableDays\": \"MON,TUE,WED,THU,FRI\",\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources" ]
+        }
+      }
+    },
+    {
+      "name": "2. Get All Resources (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources" ]
+        }
+      }
+    },
+    {
+      "name": "3. Get Resource By ID - Valid (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/1",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "1" ]
+        }
+      }
+    },
+    {
+      "name": "4. Get Resource By ID - Invalid (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/9999",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "9999" ]
+        }
+      }
+    },
+    {
+      "name": "5. Search by Type = LAB (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/search?type=LAB",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "search" ],
+          "query": [
+            { "key": "type", "value": "LAB" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "6. Update Resource (200)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-User-Role", "value": "ADMIN" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Computer Lab 01\",\n  \"type\": \"LAB\",\n  \"capacity\": 80,\n  \"location\": \"Block A, Floor 1\",\n  \"description\": \"Expanded main computer lab.\",\n  \"availabilityStart\": \"08:00:00\",\n  \"availabilityEnd\": \"18:00:00\",\n  \"availableDays\": \"MON,TUE,WED,THU,FRI\",\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/1",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "1" ]
+        }
+      }
+    },
+    {
+      "name": "7. Change Status to OUT_OF_SERVICE (200)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-User-Role", "value": "ADMIN" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"OUT_OF_SERVICE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/1/status",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "1", "status" ]
+        }
+      }
+    },
+    {
+      "name": "8. Delete Resource (200)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "X-User-Role", "value": "ADMIN" }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources/1",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources", "1" ]
+        }
+      }
+    },
+    {
+      "name": "9. Create Resource without Auth (401 - Simulated)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Secret Room\",\n  \"type\": \"MEETING_ROOM\",\n  \"capacity\": 10,\n  \"location\": \"Block H\",\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources" ]
+        }
+      }
+    },
+    {
+      "name": "10. Create Resource as USER role (403 - Simulated)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "X-User-Role", "value": "USER" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Hacked Room\",\n  \"type\": \"MEETING_ROOM\",\n  \"capacity\": 10,\n  \"location\": \"Block H\",\n  \"status\": \"ACTIVE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/v1/resources",
+          "protocol": "http",
+          "host": [ "localhost" ],
+          "port": "8080",
+          "path": [ "api", "v1", "resources" ]
+        }
+      }
+    }
+  ]
+}

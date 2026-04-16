@@ -24,10 +24,16 @@ import IncidentDetailPage from './pages/incidents/IncidentDetailPage';
 import AdminIncidentsPage from './pages/incidents/admin/AdminIncidentsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import LoginPage from './pages/LoginPage';
+import ResourceListPage from './pages/facilities/ResourceListPage';
+import ResourceDetailPage from './pages/facilities/ResourceDetailPage';
+import ResourceManagePage from './pages/facilities/admin/ResourceManagePage';
+import ResourceFormPage from './pages/facilities/admin/ResourceFormPage';
+import BookingListPage from './pages/bookings/BookingListPage';
+import BookingDetailPage from './pages/bookings/BookingDetailPage';
+import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
 import './components/notifications/Notifications.css';
-
-
 import './App.css';
+import './pages/bookings/BookingStyles.css';
 
 function Navbar() {
   const currentUser = getCurrentUser();
@@ -49,11 +55,15 @@ function Navbar() {
           <Link to="/me" className="nav-link">👤 Profile</Link>
           <Link to="/incidents" className="nav-link">🎫 My Tickets</Link>
           <Link to="/incidents/new" className="nav-link">➕ Report</Link>
+          <Link to="/resources" className="nav-link">🏢 Facilities</Link>
+          <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
 
           {currentUser?.role === 'ADMIN' && (
-            <Link to="/admin/incidents" className="nav-link admin-link">
-              🛠️ Admin Panel
-            </Link>
+            <>
+              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents Admin</Link>
+              <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities Admin</Link>
+              <Link to="/admin/bookings" className="nav-link admin-link">📋 Admin Bookings</Link>
+            </>
           )}
         </div>
 
@@ -266,10 +276,17 @@ export default function App() {
             <Route path="/incidents" element={<IncidentListPage />} />
             <Route path="/incidents/new" element={<IncidentFormPage />} />
             <Route path="/incidents/:id" element={<IncidentDetailPage />} />
+            <Route path="/resources" element={<ResourceListPage />} />
+            <Route path="/resources/:id" element={<ResourceDetailPage />} />
+            <Route path="/bookings" element={<BookingListPage />} />
+            <Route path="/bookings/:id" element={<BookingDetailPage />} />
 
             <Route element={<AdminRoute />}>
               <Route path="/admin/incidents" element={<AdminIncidentsPage />} />
-              {/* <Route path="/admin/users" element={<UserManagePage />} /> */}
+              <Route path="/admin/resources" element={<ResourceManagePage />} />
+              <Route path="/admin/resources/new" element={<ResourceFormPage />} />
+              <Route path="/admin/resources/:id/edit" element={<ResourceFormPage />} />
+              <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             </Route>
           </Route>
         </Routes>

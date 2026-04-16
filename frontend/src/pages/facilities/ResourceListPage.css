@@ -1,0 +1,30 @@
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+.page-header {
+    margin-bottom: 2rem;
+}
+.page-header h1 {
+    font-size: 2rem;
+    color: #fff;
+    margin: 0 0 0.5rem 0;
+}
+.page-header p {
+    color: #aaa;
+    margin: 0;
+}
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.loading, .no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #aaa;
+    background: #1e1e1e;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
