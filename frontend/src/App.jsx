@@ -5,6 +5,10 @@ import IncidentListPage from './pages/incidents/IncidentListPage';
 import IncidentFormPage from './pages/incidents/IncidentFormPage';
 import IncidentDetailPage from './pages/incidents/IncidentDetailPage';
 import AdminIncidentsPage from './pages/incidents/admin/AdminIncidentsPage';
+import ResourceListPage from './pages/facilities/ResourceListPage';
+import ResourceDetailPage from './pages/facilities/ResourceDetailPage';
+import ResourceManagePage from './pages/facilities/admin/ResourceManagePage';
+import ResourceFormPage from './pages/facilities/admin/ResourceFormPage';
 import BookingListPage from './pages/bookings/BookingListPage';
 import BookingDetailPage from './pages/bookings/BookingDetailPage';
 import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
@@ -30,11 +34,13 @@ function Navbar() {
         </Link>
         <div className="navbar-links">
           <Link to="/incidents" className="nav-link">🎫 My Tickets</Link>
-          <Link to="/incidents/new" className="nav-link">➕ Report Incident</Link>
+          <Link to="/incidents/new" className="nav-link">➕ Report</Link>
+          <Link to="/resources" className="nav-link">🏢 Facilities</Link>
           <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
           {role === 'ADMIN' && (
             <>
-              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Admin Tickets</Link>
+              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents Admin</Link>
+              <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities Admin</Link>
               <Link to="/admin/bookings" className="nav-link admin-link">📋 Admin Bookings</Link>
             </>
           )}
@@ -68,6 +74,11 @@ export default function App() {
             <Route path="/incidents/new" element={<IncidentFormPage />} />
             <Route path="/incidents/:id" element={<IncidentDetailPage />} />
             <Route path="/admin/incidents" element={<AdminIncidentsPage />} />
+            <Route path="/resources" element={<ResourceListPage />} />
+            <Route path="/resources/:id" element={<ResourceDetailPage />} />
+            <Route path="/admin/resources" element={<ResourceManagePage />} />
+            <Route path="/admin/resources/new" element={<ResourceFormPage />} />
+            <Route path="/admin/resources/:id/edit" element={<ResourceFormPage />} />
             <Route path="/bookings" element={<BookingListPage />} />
             <Route path="/bookings/:id" element={<BookingDetailPage />} />
             <Route path="/admin/bookings" element={<AdminBookingsPage />} />
