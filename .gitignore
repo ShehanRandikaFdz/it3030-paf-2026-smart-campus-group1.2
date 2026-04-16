@@ -1,1 +1,13 @@
 tmp/
+
+target/
+*.class
+
+# Task and documentation files
+CONTINUE_INSTRUCTIONS.md
+MODULE_B_IMPLEMENTATION.md
+TASK_BREAKDOWN.md
+TASK_RANUSHI.md
+TASK_SHASHINDI.md
+TASK_SHEHAN.md
+TASK_THISANGI.md

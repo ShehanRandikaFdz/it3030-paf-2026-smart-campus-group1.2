@@ -9,7 +9,11 @@ import ResourceListPage from './pages/facilities/ResourceListPage';
 import ResourceDetailPage from './pages/facilities/ResourceDetailPage';
 import ResourceManagePage from './pages/facilities/admin/ResourceManagePage';
 import ResourceFormPage from './pages/facilities/admin/ResourceFormPage';
+import BookingListPage from './pages/bookings/BookingListPage';
+import BookingDetailPage from './pages/bookings/BookingDetailPage';
+import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
 import './App.css';
+import './pages/bookings/BookingStyles.css';
 
 function Navbar() {
   const currentUser = getCurrentUser();
@@ -32,10 +36,12 @@ function Navbar() {
           <Link to="/incidents" className="nav-link">🎫 My Tickets</Link>
           <Link to="/incidents/new" className="nav-link">➕ Report</Link>
           <Link to="/resources" className="nav-link">🏢 Facilities</Link>
+          <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
           {role === 'ADMIN' && (
             <>
               <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents Admin</Link>
               <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities Admin</Link>
+              <Link to="/admin/bookings" className="nav-link admin-link">📋 Admin Bookings</Link>
             </>
           )}
         </div>
@@ -73,6 +79,9 @@ export default function App() {
             <Route path="/admin/resources" element={<ResourceManagePage />} />
             <Route path="/admin/resources/new" element={<ResourceFormPage />} />
             <Route path="/admin/resources/:id/edit" element={<ResourceFormPage />} />
+            <Route path="/bookings" element={<BookingListPage />} />
+            <Route path="/bookings/:id" element={<BookingDetailPage />} />
+            <Route path="/admin/bookings" element={<AdminBookingsPage />} />
           </Routes>
         </main>
       </div>

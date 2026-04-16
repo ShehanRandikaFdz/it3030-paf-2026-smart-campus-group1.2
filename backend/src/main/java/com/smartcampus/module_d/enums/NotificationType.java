@@ -1,0 +1,13 @@
+package com.smartcampus.module_d.enums;
+
+public enum NotificationType {
+    BOOKING_CREATED,
+    BOOKING_APPROVED,
+    BOOKING_REJECTED,
+    BOOKING_CANCELLED,
+    INCIDENT_CREATED,
+    INCIDENT_UPDATED,
+    INCIDENT_ASSIGNED,
+    INCIDENT_RESOLVED,
+    GENERAL
+}
