@@ -29,6 +29,7 @@ import ResourceDetailPage from './pages/facilities/ResourceDetailPage';
 import ResourceManagePage from './pages/facilities/admin/ResourceManagePage';
 import ResourceFormPage from './pages/facilities/admin/ResourceFormPage';
 import BookingListPage from './pages/bookings/BookingListPage';
+import BookingFormPage from './pages/bookings/BookingFormPage';
 import BookingDetailPage from './pages/bookings/BookingDetailPage';
 import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
 import './components/notifications/Notifications.css';
@@ -57,6 +58,7 @@ function Navbar() {
           <Link to="/incidents/new" className="nav-link">➕ Report</Link>
           <Link to="/resources" className="nav-link">🏢 Facilities</Link>
           <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
+          <Link to="/bookings/new" className="nav-link">📝 New Booking</Link>
 
           {currentUser?.role === 'ADMIN' && (
             <>
@@ -279,6 +281,7 @@ export default function App() {
             <Route path="/resources" element={<ResourceListPage />} />
             <Route path="/resources/:id" element={<ResourceDetailPage />} />
             <Route path="/bookings" element={<BookingListPage />} />
+            <Route path="/bookings/new" element={<BookingFormPage />} />
             <Route path="/bookings/:id" element={<BookingDetailPage />} />
 
             <Route element={<AdminRoute />}>

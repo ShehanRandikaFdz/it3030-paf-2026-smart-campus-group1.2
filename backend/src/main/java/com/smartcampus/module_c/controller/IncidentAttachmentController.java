@@ -1,11 +1,14 @@
 package com.smartcampus.module_c.controller;
 
 import com.smartcampus.common.ApiResponse;
+import com.smartcampus.common.security.CurrentUser;
 import com.smartcampus.module_c.dto.AttachmentResponseDTO;
 import com.smartcampus.module_c.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,9 +29,9 @@ public class IncidentAttachmentController {
     public ResponseEntity<ApiResponse<List<AttachmentResponseDTO>>> uploadAttachments(
             @PathVariable Long incidentId,
             @RequestParam("files") List<MultipartFile> files,
-            @RequestHeader("X-User-Id") UUID userId) {
+            @CurrentUser String userId) {
 
-        List<AttachmentResponseDTO> attachments = attachmentService.uploadAttachments(incidentId, files, userId);
+        List<AttachmentResponseDTO> attachments = attachmentService.uploadAttachments(incidentId, files, UUID.fromString(userId));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Attachments uploaded successfully", attachments));
     }
@@ -51,10 +54,23 @@ public class IncidentAttachmentController {
     public ResponseEntity<ApiResponse<Void>> deleteAttachment(
             @PathVariable Long incidentId,
             @PathVariable Long attachmentId,
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestHeader(value = "X-User-Role", defaultValue = "USER") String userRole) {
+            @CurrentUser String userId,
+            Authentication authentication) {
 
-        attachmentService.deleteAttachment(incidentId, attachmentId, userId, userRole);
+        String userRole = extractRole(authentication);
+        attachmentService.deleteAttachment(incidentId, attachmentId, UUID.fromString(userId), userRole);
         return ResponseEntity.ok(ApiResponse.success("Attachment deleted successfully"));
+    }
+
+    private String extractRole(Authentication authentication) {
+        if (authentication == null || authentication.getAuthorities() == null) {
+            return "USER";
+        }
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .filter(a -> a.startsWith("ROLE_"))
+                .map(a -> a.substring(5))
+                .findFirst()
+                .orElse("USER");
     }
 }

@@ -83,6 +83,12 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.delete(notification);
     }
 
+    @Override
+    public void sendEmail(String email, String subject, String body) {
+        // TODO: Integrate with email service (e.g., SendGrid, SMTP)
+        System.out.println("EMAIL - Recipient: " + email + ", Subject: " + subject);
+    }
+
     private NotificationResponseDTO map(Notification n) {
         return NotificationResponseDTO.builder()
                 .id(n.getId())

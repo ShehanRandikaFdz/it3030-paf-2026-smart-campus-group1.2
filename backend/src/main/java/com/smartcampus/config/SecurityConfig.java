@@ -26,19 +26,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // public endpoints
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
-                        // public resources
-                        .requestMatchers("/api/v1/resources/**").permitAll()
+                        // resources: GET is public, write operations require ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/v1/resources/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/resources").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/resources/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/resources/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/resources/**").hasRole("ADMIN")
 
-                        // admin only
-                        .requestMatchers("/api/v1/resources").hasRole("ADMIN")
-
+                        // user profile
                         .requestMatchers("/api/v1/users/me").authenticated()
 
-                        // admin-only endpoints
+                        // admin-only user management
                         .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
 
+                        // everything else requires authentication
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(supabaseJwtFilter, UsernamePasswordAuthenticationFilter.class);

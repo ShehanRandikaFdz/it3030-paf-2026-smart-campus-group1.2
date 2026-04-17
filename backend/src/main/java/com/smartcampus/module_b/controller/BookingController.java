@@ -1,6 +1,7 @@
 package com.smartcampus.module_b.controller;
 
 import com.smartcampus.common.ApiResponse;
+import com.smartcampus.common.security.CurrentUser;
 import com.smartcampus.module_b.dto.BookingRequestDTO;
 import com.smartcampus.module_b.dto.BookingResponseDTO;
 import com.smartcampus.module_b.dto.BookingReviewDTO;
@@ -36,7 +37,7 @@ public class BookingController {
 
     /**
      * POST /api/v1/bookings — Create a new booking request
-     * Headers: X-User-Id, X-User-Email (simulating auth)
+     * User identity is extracted from the JWT token via @CurrentUser
      * Status: 201 Created on success
      * Status: 409 Conflict if time slot is already booked
      * Status: 400 Bad Request if validation fails
@@ -44,10 +45,10 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<ApiResponse<BookingResponseDTO>> createBooking(
             @Valid @RequestBody BookingRequestDTO request,
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestHeader("X-User-Email") String userEmail) {
+            @CurrentUser String userId,
+            @RequestHeader(value = "X-User-Email", defaultValue = "") String userEmail) {
 
-        BookingResponseDTO booking = bookingService.createBooking(request, userId, userEmail);
+        BookingResponseDTO booking = bookingService.createBooking(request, UUID.fromString(userId), userEmail);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Booking request submitted successfully", booking));
     }
@@ -74,10 +75,10 @@ public class BookingController {
      */
     @GetMapping("/my")
     public ResponseEntity<ApiResponse<List<BookingResponseDTO>>> getMyBookings(
-            @RequestHeader("X-User-Id") UUID userId,
+            @CurrentUser String userId,
             @RequestParam(required = false) BookingStatus status) {
 
-        List<BookingResponseDTO> bookings = bookingService.getMyBookings(userId, status);
+        List<BookingResponseDTO> bookings = bookingService.getMyBookings(UUID.fromString(userId), status);
         return ResponseEntity.ok(
                 ApiResponse.success("Your bookings retrieved successfully", bookings));
     }
@@ -97,7 +98,6 @@ public class BookingController {
     /**
      * PUT /api/v1/bookings/{id}/review — Admin reviews (approves/rejects) a booking
      * Request body: action (APPROVED or REJECTED), adminNote (optional)
-     * Headers: X-User-Id (admin ID)
      * Only PENDING bookings can be reviewed
      * Status: 200 OK on success
      * Status: 400 Bad Request if booking is not in PENDING status
@@ -106,16 +106,15 @@ public class BookingController {
     public ResponseEntity<ApiResponse<BookingResponseDTO>> reviewBooking(
             @PathVariable Long id,
             @Valid @RequestBody BookingReviewDTO request,
-            @RequestHeader("X-User-Id") UUID adminId) {
+            @CurrentUser String adminId) {
 
-        BookingResponseDTO booking = bookingService.reviewBooking(id, request, adminId);
+        BookingResponseDTO booking = bookingService.reviewBooking(id, request, UUID.fromString(adminId));
         return ResponseEntity.ok(
                 ApiResponse.success("Booking reviewed successfully", booking));
     }
 
     /**
      * PUT /api/v1/bookings/{id}/cancel — User cancels their own booking
-     * Headers: X-User-Id (user ID)
      * Constraints:
      * - Can only cancel PENDING or APPROVED bookings
      * - Cannot cancel bookings for past dates
@@ -127,9 +126,9 @@ public class BookingController {
     @PutMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<Void>> cancelBooking(
             @PathVariable Long id,
-            @RequestHeader("X-User-Id") UUID userId) {
+            @CurrentUser String userId) {
 
-        bookingService.cancelBooking(id, userId);
+        bookingService.cancelBooking(id, UUID.fromString(userId));
         return ResponseEntity.ok(
                 ApiResponse.success("Booking cancelled successfully", null));
     }

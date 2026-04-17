@@ -1,6 +1,7 @@
 package com.smartcampus.module_c.controller;
 
 import com.smartcampus.common.ApiResponse;
+import com.smartcampus.common.security.CurrentUser;
 import com.smartcampus.module_c.dto.*;
 import com.smartcampus.module_c.enums.IncidentCategory;
 import com.smartcampus.module_c.enums.IncidentPriority;
@@ -24,15 +25,15 @@ public class IncidentController {
 
     /**
      * POST /api/v1/incidents — Create a new incident ticket
-     * Headers: X-User-Id, X-User-Email (simulating auth)
+     * User identity is extracted from the JWT token via @CurrentUser
      */
     @PostMapping
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> createIncident(
             @Valid @RequestBody IncidentRequestDTO request,
-            @RequestHeader("X-User-Id") UUID userId,
-            @RequestHeader("X-User-Email") String userEmail) {
+            @CurrentUser String userId,
+            @RequestHeader(value = "X-User-Email", defaultValue = "") String userEmail) {
 
-        IncidentResponseDTO incident = incidentService.createIncident(request, userId, userEmail);
+        IncidentResponseDTO incident = incidentService.createIncident(request, UUID.fromString(userId), userEmail);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Incident ticket created successfully", incident));
     }
@@ -44,7 +45,7 @@ public class IncidentController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<List<IncidentResponseDTO>>> getIncidents(
-            @RequestHeader("X-User-Id") UUID userId,
+            @CurrentUser String userId,
             @RequestParam(required = false) Boolean all,
             @RequestParam(required = false) IncidentStatus status,
             @RequestParam(required = false) IncidentCategory category,
@@ -55,7 +56,7 @@ public class IncidentController {
         if (Boolean.TRUE.equals(all)) {
             incidents = incidentService.getAllIncidents(status, category, priority);
         } else {
-            incidents = incidentService.getIncidentsByUser(userId, status);
+            incidents = incidentService.getIncidentsByUser(UUID.fromString(userId), status);
         }
 
         return ResponseEntity.ok(ApiResponse.success("Incidents retrieved successfully", incidents));
