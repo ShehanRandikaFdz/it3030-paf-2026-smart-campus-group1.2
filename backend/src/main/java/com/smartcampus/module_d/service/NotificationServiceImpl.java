@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -59,9 +60,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void markAsRead(Long notificationId, UUID userId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
         if (!notification.getUserId().equals(userId)) {
             throw new ForbiddenException("Not allowed");
         }
+
         notification.setRead(true);
         notificationRepository.save(notification);
     }
@@ -77,9 +80,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void deleteNotification(Long notificationId, UUID userId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
         if (!notification.getUserId().equals(userId)) {
             throw new ForbiddenException("Not allowed");
         }
+
         notificationRepository.delete(notification);
     }
 

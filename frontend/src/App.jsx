@@ -35,6 +35,9 @@ import AdminBookingsPage from './pages/bookings/admin/AdminBookingsPage';
 import './components/notifications/Notifications.css';
 import './App.css';
 import './pages/bookings/BookingStyles.css';
+import NotificationsPage from './pages/notifications/NotificationsPage';
+import UnauthorizedPage from './pages/UnauthorizedPage';
+import UserManagePage from './pages/admin/UserManagePage';
 
 function Navbar() {
   const currentUser = getCurrentUser();
@@ -65,6 +68,7 @@ function Navbar() {
               <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents Admin</Link>
               <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities Admin</Link>
               <Link to="/admin/bookings" className="nav-link admin-link">📋 Admin Bookings</Link>
+              <Link to="/admin/users" className="nav-link admin-link">👥 User Management</Link>
             </>
           )}
         </div>
@@ -290,7 +294,10 @@ export default function App() {
               <Route path="/admin/resources/new" element={<ResourceFormPage />} />
               <Route path="/admin/resources/:id/edit" element={<ResourceFormPage />} />
               <Route path="/admin/bookings" element={<AdminBookingsPage />} />
+              <Route path="/admin/users" element={<UserManagePage />} />
             </Route>
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Route>
         </Routes>
       </div>
