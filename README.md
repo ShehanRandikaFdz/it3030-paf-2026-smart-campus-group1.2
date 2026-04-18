@@ -11,10 +11,10 @@ A full-stack web application for managing campus operations including facilities
 
 | Member | Student ID | Module | Focus Area |
 |--------|-----------|--------|------------|
-| **Ranushi** | — | Module A | Facilities & Assets Catalogue |
+| **Ranushi** | IT23224384 | Module A | Facilities & Assets Catalogue |
 | **Shashindi** | IT23194908 | Module B | Booking Management & Conflict Checking |
 | **Shehan** | IT23449282 | Module C | Incident Tickets + Attachments + Technician Updates |
-| **Thisangi** | — | Module D+E | Notifications + Role Management + OAuth |
+| **Thisangi** | IT23426726 | Module D+E | Notifications + Role Management + OAuth |
 
 ---
 
