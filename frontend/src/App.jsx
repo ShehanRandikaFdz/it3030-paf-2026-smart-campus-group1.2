@@ -57,18 +57,19 @@ function Navbar() {
 
         <div className="navbar-links">
           <Link to="/me" className="nav-link">👤 Profile</Link>
-          <Link to="/incidents" className="nav-link">🎫 My Tickets</Link>
+          <Link to="/incidents" className="nav-link">🎫 Tickets</Link>
           <Link to="/incidents/new" className="nav-link">➕ Report</Link>
           <Link to="/resources" className="nav-link">🏢 Facilities</Link>
-          <Link to="/bookings" className="nav-link">📅 My Bookings</Link>
+          <Link to="/bookings" className="nav-link">📅 Bookings</Link>
           <Link to="/bookings/new" className="nav-link">📝 New Booking</Link>
 
           {currentUser?.role === 'ADMIN' && (
             <>
-              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents Admin</Link>
-              <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities Admin</Link>
-              <Link to="/admin/bookings" className="nav-link admin-link">📋 Admin Bookings</Link>
-              <Link to="/admin/users" className="nav-link admin-link">👥 User Management</Link>
+              <div className="nav-divider" />
+              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents</Link>
+              <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities</Link>
+              <Link to="/admin/bookings" className="nav-link admin-link">📋 Bookings</Link>
+              <Link to="/admin/users" className="nav-link admin-link">👥 Users</Link>
             </>
           )}
         </div>
