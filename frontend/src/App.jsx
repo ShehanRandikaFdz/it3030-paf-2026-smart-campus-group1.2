@@ -88,27 +88,26 @@ function Navbar() {
 function AuthCallbackPage() {
   React.useEffect(() => {
     const finishLogin = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session?.user) {
-        window.location.href = '/login';
-        return;
-      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) { window.location.href = '/login'; return; }
 
       const userId = session.user.id;
       const email = session.user.email || '';
+      const fullName = session.user.user_metadata?.full_name || '';
 
-      const { data: profile, error } = await supabase
+      // Save/update user_profiles for Google users
+      await supabase.from('user_profiles').upsert({
+        id: userId,
+        email: email,
+        full_name: fullName,
+        role: 'USER',
+      }, { onConflict: 'id', ignoreDuplicates: true });
+
+      const { data: profile } = await supabase
         .from('user_profiles')
         .select('id, email, role')
         .eq('id', userId)
         .single();
-
-      if (error) {
-        console.error('Failed to load user profile:', error.message);
-      }
 
       setAuthData({
         id: userId,

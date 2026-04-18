@@ -67,7 +67,7 @@
     }
 }
 
-/* Login card */
+/* Login card - centered flex container */
 .login-card {
     position: relative;
     z-index: 1;
@@ -85,6 +85,11 @@
         0 20px 60px rgba(0, 0, 0, 0.4),
         0 0 100px rgba(139, 92, 246, 0.05);
     animation: cardEntry 0.6s ease-out;
+
+    /* Centering all children */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 @keyframes cardEntry {
@@ -331,6 +336,10 @@
     .login-card {
         padding: 36px 24px;
         border-radius: 20px;
+        /* Keep flex centering from base */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .login-brand-title {
