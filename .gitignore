@@ -19,3 +19,5 @@ backend/target/
 
 # Environment files
 backend/.env
+.vscode/settings.json
+*.session.sql
