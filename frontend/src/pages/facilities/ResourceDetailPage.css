@@ -4,7 +4,7 @@
     padding: 2rem;
 }
 .back-link {
-    color: #3b82f6;
+    color: #7c3aed;
     text-decoration: none;
     margin-bottom: 1rem;
     display: inline-block;
@@ -18,7 +18,7 @@
 .resource-header h1 {
     font-size: 2.5rem;
     margin: 0;
-    color: #fff;
+    color: #1f2937;
     word-break: break-word;
 }
 .resource-content {
@@ -32,27 +32,27 @@
     width: 100%;
     height: 400px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     margin-bottom: 1.5rem;
 }
 .resource-hero-placeholder {
     width: 100%;
     height: 400px;
-    background: #2a2a2a;
+    background: #f3f4f6;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    color: #555;
-    border-radius: 8px;
+    color: #9ca3af;
+    border-radius: 12px;
     margin-bottom: 1.5rem;
 }
 .resource-description h3 {
     margin-top: 0;
-    color: #fff;
+    color: #1f2937;
 }
 .resource-description p {
-    color: #ccc;
+    color: #4b5563;
     line-height: 1.6;
 }
 .resource-sidebar {
@@ -62,23 +62,23 @@
     gap: 1.5rem;
 }
 .sidebar-section {
-    background: #1e1e1e;
+    background: #ffffff;
     padding: 1.5rem;
-    border-radius: 8px;
-    border: 1px solid #333;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
 }
 .sidebar-section h3 {
     margin-top: 0;
-    color: #fff;
-    border-bottom: 1px solid #333;
+    color: #1f2937;
+    border-bottom: 1px solid #f3f4f6;
     padding-bottom: 0.5rem;
 }
 .sidebar-section p {
-    color: #aaa;
+    color: #6b7280;
     margin: 0.5rem 0;
 }
 .sidebar-section p strong {
-    color: #eee;
+    color: #1f2937;
 }
 .sidebar-actions {
     display: flex;
@@ -87,7 +87,7 @@
 }
 .book-btn {
     padding: 1rem;
-    background: #10b981;
+    background: #059669;
     color: white;
     border: none;
     border-radius: 8px;
@@ -96,8 +96,8 @@
     cursor: pointer;
 }
 .book-btn:disabled {
-    background: #374151;
-    color: #6b7280;
+    background: #e5e7eb;
+    color: #9ca3af;
     cursor: not-allowed;
 }
 .admin-actions {
@@ -109,7 +109,7 @@
     padding: 0.75rem;
     text-align: center;
     text-decoration: none;
-    border-radius: 4px;
+    border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
     border: none;

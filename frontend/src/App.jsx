@@ -49,30 +49,12 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-inner">
+      {/* Top row: Brand + User */}
+      <div className="navbar-top">
         <Link to="/" className="navbar-brand">
           <span className="brand-icon">🏫</span>
           <span className="brand-text">Smart Campus</span>
         </Link>
-
-        <div className="navbar-links">
-          <Link to="/me" className="nav-link">👤 Profile</Link>
-          <Link to="/incidents" className="nav-link">🎫 Tickets</Link>
-          <Link to="/incidents/new" className="nav-link">➕ Report</Link>
-          <Link to="/resources" className="nav-link">🏢 Facilities</Link>
-          <Link to="/bookings" className="nav-link">📅 Bookings</Link>
-          <Link to="/bookings/new" className="nav-link">📝 New Booking</Link>
-
-          {currentUser?.role === 'ADMIN' && (
-            <>
-              <div className="nav-divider" />
-              <Link to="/admin/incidents" className="nav-link admin-link">🛠️ Incidents</Link>
-              <Link to="/admin/resources" className="nav-link admin-link">⚙️ Facilities</Link>
-              <Link to="/admin/bookings" className="nav-link admin-link">📋 Bookings</Link>
-              <Link to="/admin/users" className="nav-link admin-link">👥 Users</Link>
-            </>
-          )}
-        </div>
 
         <div className="navbar-user">
           <NotificationBell />
@@ -81,6 +63,27 @@ function Navbar() {
             Logout
           </button>
         </div>
+      </div>
+
+      {/* Bottom row: Navigation */}
+      <div className="navbar-nav">
+        <Link to="/me" className="nav-link">Profile</Link>
+        <Link to="/incidents" className="nav-link">Tickets</Link>
+        <Link to="/incidents/new" className="nav-link">Report Issue</Link>
+        <Link to="/resources" className="nav-link">Facilities</Link>
+        <Link to="/bookings" className="nav-link">Bookings</Link>
+        <Link to="/bookings/new" className="nav-link">New Booking</Link>
+        <Link to="/notifications" className="nav-link">Notifications</Link>
+
+        {currentUser?.role === 'ADMIN' && (
+          <>
+            <span className="nav-separator">|</span>
+            <Link to="/admin/incidents" className="nav-link admin-link">Manage Incidents</Link>
+            <Link to="/admin/resources" className="nav-link admin-link">Manage Facilities</Link>
+            <Link to="/admin/bookings" className="nav-link admin-link">Manage Bookings</Link>
+            <Link to="/admin/users" className="nav-link admin-link">Manage Users</Link>
+          </>
+        )}
       </div>
     </nav>
   );
@@ -132,8 +135,8 @@ function AuthCallbackPage() {
         width: '100%',
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         fontSize: '1rem',
-        color: '#f4f4f5',
-        backgroundColor: '#0f0f17',
+        color: '#1f2937',
+        backgroundColor: '#f5f6fa',
         margin: 0,
         padding: 0,
       }}
@@ -150,8 +153,8 @@ function AuthCallbackPage() {
           style={{
             width: '40px',
             height: '40px',
-            border: '3px solid rgba(139, 92, 246, 0.3)',
-            borderTopColor: '#a78bfa',
+            border: '3px solid #ede9fe',
+            borderTopColor: '#7c3aed',
             borderRadius: '50%',
             animation: 'spin 0.8s linear infinite',
           }}

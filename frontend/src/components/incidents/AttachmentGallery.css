@@ -2,7 +2,7 @@
 .gallery-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #f4f4f5;
+  color: #1f2937;
   margin: 0 0 12px 0;
 }
 .gallery-grid {
@@ -12,14 +12,14 @@
 }
 .gallery-item {
   position: relative;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  background: #27272a;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
   transition: border-color 0.2s;
 }
 .gallery-item:hover {
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: #ddd6fe;
 }
 .gallery-item a { display: block; }
 .gallery-item img {
@@ -35,7 +35,7 @@
 .gallery-item-name {
   display: block;
   font-size: 0.8rem;
-  color: #d4d4d8;
+  color: #374151;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -43,14 +43,14 @@
 .gallery-item-size {
   display: block;
   font-size: 0.7rem;
-  color: #71717a;
+  color: #9ca3af;
   margin-top: 2px;
 }
 .gallery-item-delete {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 8px;
   padding: 4px 8px;
@@ -58,5 +58,6 @@
   font-size: 0.85rem;
   opacity: 0;
   transition: opacity 0.2s;
+  color: white;
 }
 .gallery-item:hover .gallery-item-delete { opacity: 1; }
