@@ -7,11 +7,7 @@ const ResourceCard = ({ resource }) => {
   return (
     <div className="resource-card">
       <div className="resource-card-img">
-        {resource.imageUrl ? (
-           <img src={resource.imageUrl} alt={resource.name} />
-        ) : (
-           <div className="placeholder-img">{resource.type}</div>
-        )}
+        <div className="placeholder-img">{resource.type}</div>
       </div>
       <div className="resource-card-body">
         <div className="card-header">

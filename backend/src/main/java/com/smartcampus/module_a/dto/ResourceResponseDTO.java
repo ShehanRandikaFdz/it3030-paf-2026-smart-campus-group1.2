@@ -18,7 +18,6 @@ public class ResourceResponseDTO {
     private LocalTime availabilityStart;
     private LocalTime availabilityEnd;
     private String availableDays;
-    private String imageUrl;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

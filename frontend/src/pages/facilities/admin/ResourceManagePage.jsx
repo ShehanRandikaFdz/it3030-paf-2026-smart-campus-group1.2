@@ -56,7 +56,10 @@ const ResourceManagePage = () => {
             <th>Type</th>
             <th>Location</th>
             <th>Description</th>
+<<<<<<< Updated upstream
             <th>Picture</th>
+=======
+>>>>>>> Stashed changes
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -68,8 +71,16 @@ const ResourceManagePage = () => {
               <td>{res.name}</td>
               <td>{res.type}</td>
               <td>{res.location}</td>
+<<<<<<< Updated upstream
               <td>{res.description}</td>
               <td>{res.imageUrl ? <img src={res.imageUrl} alt="thumb" className="resource-thumb" /> : '—'}</td>
+=======
+              <td title={res.description}>
+                {res.description && res.description.length > 30 
+                  ? res.description.substring(0, 30) + '...' 
+                  : (res.description || '-')}
+              </td>
+>>>>>>> Stashed changes
               <td>
                 <select 
                   value={res.status} 

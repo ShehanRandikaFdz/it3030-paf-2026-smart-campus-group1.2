@@ -93,7 +93,6 @@ public class ResourceServiceImpl implements ResourceService {
         entity.setAvailabilityStart(dto.getAvailabilityStart());
         entity.setAvailabilityEnd(dto.getAvailabilityEnd());
         entity.setAvailableDays(dto.getAvailableDays());
-        entity.setImageUrl(dto.getImageUrl());
     }
 
     private ResourceResponseDTO mapToResponse(Resource entity) {
@@ -108,7 +107,6 @@ public class ResourceServiceImpl implements ResourceService {
         dto.setAvailabilityStart(entity.getAvailabilityStart());
         dto.setAvailabilityEnd(entity.getAvailabilityEnd());
         dto.setAvailableDays(entity.getAvailableDays());
-        dto.setImageUrl(entity.getImageUrl());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
         return dto;

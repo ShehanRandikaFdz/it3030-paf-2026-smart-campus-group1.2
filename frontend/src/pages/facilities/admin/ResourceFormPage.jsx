@@ -17,8 +17,7 @@ const ResourceFormPage = () => {
     availabilityStart: '08:00',
     availabilityEnd: '18:00',
     availableDays: 'MON,TUE,WED,THU,FRI',
-    status: 'ACTIVE',
-    imageUrl: ''
+    status: 'ACTIVE'
   });
 
   const [loading, setLoading] = useState(isEdit);
@@ -55,6 +54,17 @@ const ResourceFormPage = () => {
       const payload = { ...formData };
       if (payload.type === 'EQUIPMENT' && !payload.capacity) {
         payload.capacity = 1;
+      }
+      if (payload.capacity === '') {
+        payload.capacity = null;
+      }
+      
+      // Ensure seconds are included corresponding to Jackson LocalTime expectation
+      if (payload.availabilityStart && payload.availabilityStart.length === 5) {
+        payload.availabilityStart += ':00';
+      }
+      if (payload.availabilityEnd && payload.availabilityEnd.length === 5) {
+        payload.availabilityEnd += ':00';
       }
       
       if (isEdit) {
@@ -106,7 +116,7 @@ const ResourceFormPage = () => {
 
           <div className="form-group">
             <label>Description</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} rows="4" />
+            <textarea name="description" value={formData.description || ''} onChange={handleChange} rows="4" />
           </div>
 
           <div className="form-row">
@@ -125,19 +135,13 @@ const ResourceFormPage = () => {
             <input type="text" name="availableDays" value={formData.availableDays || ''} onChange={handleChange} placeholder="e.g. MON,TUE,WED,THU,FRI" />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Status</label>
-              <select name="status" value={formData.status} onChange={handleChange}>
-                <option value="ACTIVE">Active</option>
-                <option value="OUT_OF_SERVICE">Out of Service</option>
-                <option value="UNDER_MAINTENANCE">Maintenance</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Image URL</label>
-              <input type="text" name="imageUrl" value={formData.imageUrl || ''} onChange={handleChange} placeholder="https://example.com/image.jpg" />
-            </div>
+          <div className="form-group">
+            <label>Status</label>
+            <select name="status" value={formData.status} onChange={handleChange}>
+              <option value="ACTIVE">Active</option>
+              <option value="OUT_OF_SERVICE">Out of Service</option>
+              <option value="UNDER_MAINTENANCE">Maintenance</option>
+            </select>
           </div>
 
           <div className="form-actions">
