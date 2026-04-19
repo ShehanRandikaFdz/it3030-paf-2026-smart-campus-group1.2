@@ -1,0 +1,157 @@
+/* ═══════════════════════════════════════════
+   Admin Dashboard — Light Theme
+   ═══════════════════════════════════════════ */
+
+.admin-dashboard {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 2px solid #ede9fe;
+}
+
+.dash-header {
+  margin-bottom: 28px;
+}
+
+.dash-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 6px 0;
+}
+
+.dash-header p {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.dash-loading,
+.dash-error {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.dash-error {
+  color: #dc2626;
+}
+
+/* ── Stat Cards ── */
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  border-color: #ddd6fe;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.06);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.1;
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.stat-icon.blue {
+  background: #eff6ff;
+}
+
+.stat-icon.green {
+  background: #ecfdf5;
+}
+
+.stat-icon.orange {
+  background: #fffbeb;
+}
+
+.stat-icon.purple {
+  background: #f5f3ff;
+}
+
+/* ── Charts ── */
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.chart-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.chart-container {
+  height: 260px;
+  position: relative;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+  .stat-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
