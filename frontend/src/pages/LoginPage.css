@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0f0f17;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 30%, #e0e7ff 60%, #f0fdf4 100%);
     position: relative;
     overflow: hidden;
     padding: 24px;
@@ -14,7 +14,7 @@
     position: absolute;
     border-radius: 50%;
     filter: blur(80px);
-    opacity: 0.3;
+    opacity: 0.25;
     animation: float 15s ease-in-out infinite;
     pointer-events: none;
 }
@@ -22,7 +22,7 @@
 .login-bg-orb-1 {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+    background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
     top: -100px;
     right: -80px;
     animation-delay: 0s;
@@ -31,7 +31,7 @@
 .login-bg-orb-2 {
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+    background: radial-gradient(circle, #60a5fa 0%, transparent 70%);
     bottom: -60px;
     left: -60px;
     animation-delay: -5s;
@@ -40,7 +40,7 @@
 .login-bg-orb-3 {
     width: 250px;
     height: 250px;
-    background: radial-gradient(circle, #a78bfa 0%, transparent 70%);
+    background: radial-gradient(circle, #c4b5fd 0%, transparent 70%);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -67,26 +67,25 @@
     }
 }
 
-/* Login card - centered flex container */
+/* Login card */
 .login-card {
     position: relative;
     z-index: 1;
-    background: rgba(30, 30, 46, 0.7);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(124, 58, 237, 0.1);
     border-radius: 24px;
     padding: 48px 40px;
     max-width: 420px;
     width: 100%;
     text-align: center;
     box-shadow:
-        0 0 0 1px rgba(139, 92, 246, 0.05),
-        0 20px 60px rgba(0, 0, 0, 0.4),
-        0 0 100px rgba(139, 92, 246, 0.05);
+        0 0 0 1px rgba(124, 58, 237, 0.04),
+        0 20px 60px rgba(0, 0, 0, 0.08),
+        0 0 80px rgba(124, 58, 237, 0.05);
     animation: cardEntry 0.6s ease-out;
 
-    /* Centering all children */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -131,7 +130,7 @@
 .login-brand-title {
     font-size: 1.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #c4b5fd, #8b5cf6, #a78bfa);
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -141,7 +140,7 @@
 
 .login-brand-subtitle {
     font-size: 0.95rem;
-    color: #71717a;
+    color: #6b7280;
     margin: 4px 0 0;
     font-weight: 500;
 }
@@ -159,14 +158,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: #e5e7eb;
 }
 
 .login-divider span {
     position: relative;
-    background: rgba(30, 30, 46, 0.9);
+    background: rgba(255, 255, 255, 0.85);
     padding: 0 16px;
-    color: #71717a;
+    color: #9ca3af;
     font-size: 0.82rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -175,12 +174,12 @@
 
 /* Error message */
 .login-error {
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: #fef2f2;
+    border: 1px solid #fecaca;
     border-radius: 12px;
     padding: 12px 16px;
     margin-bottom: 20px;
-    color: #fca5a5;
+    color: #b91c1c;
     font-size: 0.85rem;
     text-align: left;
 }
@@ -192,10 +191,10 @@
     justify-content: center;
     gap: 12px;
     padding: 14px 24px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid #e5e7eb;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.04);
-    color: #f4f4f5;
+    background: #ffffff;
+    color: #1f2937;
     font-size: 0.95rem;
     font-weight: 600;
     font-family: 'Inter', sans-serif;
@@ -209,15 +208,15 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.05), rgba(79, 70, 229, 0.05));
     opacity: 0;
     transition: opacity 0.25s ease;
 }
 
 .google-sign-in-btn:hover:not(:disabled) {
-    border-color: rgba(139, 92, 246, 0.4);
+    border-color: #a78bfa;
     transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15);
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.1);
 }
 
 .google-sign-in-btn:hover:not(:disabled)::before {
@@ -243,7 +242,7 @@
 .login-footer {
     margin-top: 20px;
     font-size: 0.78rem;
-    color: #52525b;
+    color: #9ca3af;
     line-height: 1.5;
 }
 
@@ -254,7 +253,7 @@
     gap: 24px;
     margin-top: 32px;
     padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid #e5e7eb;
 }
 
 .login-feature {
@@ -263,7 +262,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.75rem;
-    color: #71717a;
+    color: #6b7280;
     font-weight: 500;
 }
 
@@ -275,8 +274,8 @@
 .login-loading-spinner {
     width: 36px;
     height: 36px;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #8b5cf6;
+    border: 3px solid #ede9fe;
+    border-top-color: #7c3aed;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin: 0 auto;
@@ -294,15 +293,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #0f0f17;
-    color: #f4f4f5;
+    background: #f5f6fa;
+    color: #1f2937;
 }
 
 .auth-callback-card {
     text-align: center;
-    background: rgba(30, 30, 46, 0.7);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid #e5e7eb;
     border-radius: 20px;
     padding: 48px 40px;
     max-width: 360px;
@@ -318,15 +317,15 @@
 .auth-callback-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(139, 92, 246, 0.2);
-    border-top-color: #8b5cf6;
+    border: 3px solid #ede9fe;
+    border-top-color: #7c3aed;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin: 0 auto 16px;
 }
 
 .auth-callback-sub {
-    color: #71717a;
+    color: #6b7280;
     font-size: 0.82rem;
     margin-top: 8px;
 }
@@ -336,7 +335,6 @@
     .login-card {
         padding: 36px 24px;
         border-radius: 20px;
-        /* Keep flex centering from base */
         display: flex;
         flex-direction: column;
         align-items: center;

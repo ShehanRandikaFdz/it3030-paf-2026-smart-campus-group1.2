@@ -2,43 +2,44 @@
 
 .admin-table-wrapper {
   overflow-x: auto;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
 }
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  background: #1e1e2e;
+  background: #ffffff;
 }
 .admin-table th {
   padding: 14px 16px;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #71717a;
+  color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid #e5e7eb;
   white-space: nowrap;
+  background: #f9fafb;
 }
 .admin-table td {
   padding: 14px 16px;
   font-size: 0.85rem;
-  color: #d4d4d8;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
 }
-.admin-table tr:hover td { background: rgba(139, 92, 246, 0.03); }
+.admin-table tr:hover td { background: #f9fafb; }
 
-.cell-id { color: #a78bfa; font-weight: 600; }
+.cell-id { color: #7c3aed; font-weight: 600; }
 .cell-title a {
-  color: #f4f4f5;
+  color: #1f2937;
   text-decoration: none;
   font-weight: 500;
 }
-.cell-title a:hover { color: #a78bfa; text-decoration: underline; }
+.cell-title a:hover { color: #7c3aed; text-decoration: underline; }
 .cell-category { text-transform: capitalize; font-size: 0.8rem; }
-.cell-email { font-size: 0.8rem; color: #a1a1aa; }
-.no-data { text-align: center; color: #71717a; padding: 48px 16px !important; }
+.cell-email { font-size: 0.8rem; color: #6b7280; }
+.no-data { text-align: center; color: #9ca3af; padding: 48px 16px !important; }
 
 .action-buttons { display: flex; gap: 6px; }
 .action-btn {
@@ -50,18 +51,18 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.action-btn.assign { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
-.action-btn.assign:hover { background: rgba(59, 130, 246, 0.25); }
-.action-btn.status { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
-.action-btn.status:hover { background: rgba(245, 158, 11, 0.25); }
-.action-btn.delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-.action-btn.delete:hover { background: rgba(239, 68, 68, 0.2); }
+.action-btn.assign { background: #eff6ff; color: #2563eb; }
+.action-btn.assign:hover { background: #dbeafe; }
+.action-btn.status { background: #fffbeb; color: #d97706; }
+.action-btn.status:hover { background: #fef3c7; }
+.action-btn.delete { background: #fef2f2; color: #dc2626; }
+.action-btn.delete:hover { background: #fee2e2; }
 
 /* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -69,13 +70,13 @@
   z-index: 1000;
 }
 .modal-content {
-  background: #1e1e2e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
   padding: 28px;
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 }
 .modal-header {
   display: flex;
@@ -83,32 +84,32 @@
   align-items: center;
   margin-bottom: 8px;
 }
-.modal-header h3 { color: #f4f4f5; margin: 0; font-size: 1.1rem; }
+.modal-header h3 { color: #1f2937; margin: 0; font-size: 1.1rem; }
 .modal-close {
   background: none;
   border: none;
-  color: #71717a;
+  color: #9ca3af;
   font-size: 1.2rem;
   cursor: pointer;
 }
 .modal-incident-title {
   font-size: 0.85rem;
-  color: #a1a1aa;
+  color: #6b7280;
   margin: 0 0 20px 0;
 }
 .modal-body label {
   display: block;
   font-size: 0.85rem;
-  color: #d4d4d8;
+  color: #374151;
   font-weight: 500;
   margin-bottom: 6px;
 }
 .modal-body select, .modal-body input, .modal-body textarea {
   width: 100%;
-  background: #0f0f17;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: #f4f4f5;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #1f2937;
   padding: 10px 14px;
   font-size: 0.9rem;
   font-family: inherit;
@@ -117,7 +118,8 @@
 }
 .modal-body select:focus, .modal-body input:focus, .modal-body textarea:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.5);
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
 }
 .modal-field { margin-top: 8px; }
 .modal-body .btn-primary { width: 100%; margin-top: 8px; }
