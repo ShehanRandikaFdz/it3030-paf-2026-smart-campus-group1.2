@@ -54,6 +54,25 @@ public class BookingController {
     }
 
     /**
+     * PUT /api/v1/bookings/{id} — Update an existing PENDING booking (owner only)
+     * Allows user to change resource, date, time, attendees, or purpose of a PENDING booking.
+     * Status: 200 OK on success
+     * Status: 400 if booking is not PENDING
+     * Status: 403 if not the booking owner
+     * Status: 409 if updated slot conflicts
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BookingResponseDTO>> updateBooking(
+            @PathVariable Long id,
+            @Valid @RequestBody BookingRequestDTO request,
+            @CurrentUser String userId) {
+
+        BookingResponseDTO booking = bookingService.updateBooking(id, request, UUID.fromString(userId));
+        return ResponseEntity.ok(
+                ApiResponse.success("Booking updated successfully", booking));
+    }
+
+    /**
      * GET /api/v1/bookings — Get all bookings (admin only)
      * Query params: status (optional), resourceId (optional)
      * Returns paginated list of all bookings with optional filters
