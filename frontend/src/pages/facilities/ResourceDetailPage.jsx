@@ -54,11 +54,7 @@ const ResourceDetailPage = () => {
 
       <div className="resource-content">
         <div className="resource-main">
-          {resource.imageUrl ? (
-            <img src={resource.imageUrl} alt={resource.name} className="resource-hero-img" />
-          ) : (
-            <div className="resource-hero-placeholder">{resource.type}</div>
-          )}
+          <div className="resource-hero-placeholder">{resource.type}</div>
           
           <div className="resource-description">
             <h3>Description</h3>

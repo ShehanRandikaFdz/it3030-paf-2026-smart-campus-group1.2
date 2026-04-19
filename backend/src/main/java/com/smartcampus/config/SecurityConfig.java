@@ -31,10 +31,10 @@ public class SecurityConfig {
 
                         // resources: GET is public, write operations require ADMIN
                         .requestMatchers(HttpMethod.GET, "/api/v1/resources/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/resources").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/resources/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/resources/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/resources/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/resources").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/resources/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/resources/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/resources/**").permitAll()
 
                         // user profile
                         .requestMatchers("/api/v1/users/me").authenticated()

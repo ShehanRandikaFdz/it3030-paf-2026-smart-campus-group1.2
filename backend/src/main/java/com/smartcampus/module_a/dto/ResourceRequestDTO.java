@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.time.LocalTime;
 
+
 @Data
 public class ResourceRequestDTO {
     @NotBlank(message = "Name is required")
@@ -33,6 +34,4 @@ public class ResourceRequestDTO {
     private LocalTime availabilityEnd;
 
     private String availableDays;
-    
-    private String imageUrl;
 }

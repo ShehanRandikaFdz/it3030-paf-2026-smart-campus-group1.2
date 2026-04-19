@@ -48,9 +48,6 @@ public class Resource {
     @Column(name = "available_days", length = 50)
     private String availableDays;
 
-    @Column(name = "image_url", columnDefinition = "TEXT")
-    private String imageUrl;
-
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 

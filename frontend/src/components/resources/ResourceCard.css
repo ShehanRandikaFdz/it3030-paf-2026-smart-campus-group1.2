@@ -65,3 +65,35 @@
 .view-btn:hover {
     background: #6d28d9;
 }
+
+/* Green button for available resources */
+.available-btn {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #10b981;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    font-size: 0.95rem;
+}
+.available-btn:hover {
+    background: #059669;
+}
+
+/* Red button for unavailable resources */
+.unavailable-btn {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: not-allowed;
+    font-weight: 600;
+    width: 100%;
+    opacity: 0.8;
+    font-size: 0.95rem;
+}

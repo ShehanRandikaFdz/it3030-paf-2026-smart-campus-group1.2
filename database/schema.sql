@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS resources (
     availability_start  TIME,                           -- e.g. 08:00
     availability_end    TIME,                           -- e.g. 18:00
     available_days      VARCHAR(50),                    -- e.g. "MON,TUE,WED,THU,FRI"
-    image_url           TEXT,
     created_at          TIMESTAMPTZ DEFAULT NOW(),
     updated_at          TIMESTAMPTZ DEFAULT NOW()
 );
