@@ -55,6 +55,8 @@ const ResourceManagePage = () => {
             <th>Name</th>
             <th>Type</th>
             <th>Location</th>
+            <th>Description</th>
+            <th>Picture</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -66,6 +68,8 @@ const ResourceManagePage = () => {
               <td>{res.name}</td>
               <td>{res.type}</td>
               <td>{res.location}</td>
+              <td>{res.description}</td>
+              <td>{res.imageUrl ? <img src={res.imageUrl} alt="thumb" className="resource-thumb" /> : '—'}</td>
               <td>
                 <select 
                   value={res.status} 

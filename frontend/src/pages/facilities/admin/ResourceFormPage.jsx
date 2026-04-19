@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { createResource, getResourceById, updateResource } from '../../../api/resourcesApi';
 import './ResourceFormPage.css';

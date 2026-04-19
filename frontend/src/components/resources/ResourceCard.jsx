@@ -23,6 +23,11 @@ const ResourceCard = ({ resource }) => {
            {resource.capacity ? `Capacity: ${resource.capacity}` : 'Equipment'}
         </div>
         <Link to={`/resources/${resource.id}`} className="view-btn">View Details</Link>
+        {resource.status === 'ACTIVE' ? (
+          <button className="available-btn">Available</button>
+        ) : (
+          <button className="unavailable-btn" disabled>Unavailable</button>
+        )}
       </div>
     </div>
   );

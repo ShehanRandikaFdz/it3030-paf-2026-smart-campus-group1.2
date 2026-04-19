@@ -282,3 +282,21 @@ Write these sections in the group report:
 - **Resource API endpoints** — your endpoint table
 - **Resource DB table** — your table design with field descriptions
 - **Frontend screenshots** — ResourceListPage and ResourceFormPage
+## Validation Rules (Backend & Frontend)
+
+### Backend (Bean Validation)
+- `name` – `@NotBlank`, max length 100 characters.
+- `type` – `@NotBlank`, must be one of `LECTURE_HALL`, `LAB`, `MEETING_ROOM`, `EQUIPMENT`.
+- `capacity` – optional for equipment; when present must be `@Min(1)` and `@Max(1000)`.
+- `location` – `@NotBlank`, max length 200 characters.
+- `status` – `@NotBlank`, allowed values `ACTIVE`, `OUT_OF_SERVICE`, `UNDER_MAINTENANCE`.
+- `availabilityWindows` – optional, must match regex `^[A-Za-z]{3}(?:-[A-Za-z]{3})? \d{2}:\d{2}-\d{2}:\d{2}$` (e.g., `Mon-Fri 08:00-18:00`).
+- `imageUrl` – optional, must be a valid Base64 string (`data:image/...;base64,` prefix) and size ≤ 2 MB.
+
+### Frontend (React Form Validation)
+- All required fields (`name`, `type`, `location`, `status`) have `required` attribute.
+- `capacity` input is disabled for `EQUIPMENT` type and defaults to `1`.
+- `capacity` must be a positive integer; UI shows error if non‑numeric or ≤ 0.
+- `availabilityStart` / `availabilityEnd` must be valid times and `start < end`.
+- Image file input accepts only `image/*`; file size is checked (< 2 MB) before converting to Base64.
+- On submit, the form prevents submission and displays an alert if any validation fails.
