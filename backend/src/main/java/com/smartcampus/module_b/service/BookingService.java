@@ -16,6 +16,11 @@ public interface BookingService {
     BookingResponseDTO createBooking(BookingRequestDTO request, UUID userId, String userEmail);
 
     /**
+     * Update an existing PENDING booking — owner only
+     */
+    BookingResponseDTO updateBooking(Long id, BookingRequestDTO request, UUID userId);
+
+    /**
      * Get all bookings for a specific user with optional status filter
      */
     List<BookingResponseDTO> getMyBookings(UUID userId, BookingStatus statusFilter);

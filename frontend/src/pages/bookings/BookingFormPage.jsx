@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBooking } from '../../api/bookingsApi';
+import { getAllResources } from '../../api/resourcesApi';
 import AvailabilityChecker from '../../components/bookings/AvailabilityChecker';
+import AvailabilityCalendar from '../../components/bookings/AvailabilityCalendar';
 import '../bookings/BookingStyles.css';
 
 /**
- * BookingFormPage — Form to create a new booking request
+ * BookingFormPage — Standalone page to CREATE a new booking.
+ * Resources are loaded dynamically from the API (no hardcoded list).
+ * Embeds AvailabilityCalendar to help users pick a free slot visually.
  */
 const BookingFormPage = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     resourceId: '',
     title: '',
@@ -16,37 +21,55 @@ const BookingFormPage = () => {
     bookingDate: '',
     startTime: '',
     endTime: '',
-    attendees: 1
+    attendees: 1,
   });
+
+  const [resources, setResources] = useState([]);
+  const [resourcesLoading, setResourcesLoading] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const [submitError, setSubmitError] = useState('');
+
+  // Fetch ACTIVE resources for the dropdown
+  useEffect(() => {
+    getAllResources({ status: 'ACTIVE', size: 100 })
+      .then(res => {
+        const data = res.data?.data?.content || res.data?.data || [];
+        setResources(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setResources([]))
+      .finally(() => setResourcesLoading(false));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Called when user clicks a slot in AvailabilityCalendar
+  const handleSlotSelect = (startTime, endTime) => {
+    setFormData(prev => ({ ...prev, startTime, endTime }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!isAvailable) {
       setSubmitError('Selected time slot is not available. Please choose a different time.');
       return;
     }
-
     setIsLoading(true);
     setSubmitError('');
-
     try {
-      const response = await createBooking(formData);
+      const payload = {
+        ...formData,
+        resourceId: Number(formData.resourceId),
+        attendees: Number(formData.attendees),
+      };
+      const response = await createBooking(payload);
       if (response.data.success) {
-        navigate('/bookings', { 
-          state: { successMessage: 'Booking created successfully! It is now pending admin review.' }
+        navigate('/bookings', {
+          state: { successMessage: 'Booking submitted! Pending admin review.' },
         });
       }
     } catch (err) {
@@ -61,15 +84,20 @@ const BookingFormPage = () => {
   return (
     <div className="form-page">
       <div className="page-header">
-        <h1>Create New Booking</h1>
-        <p>Request a resource for your upcoming event or meeting</p>
+        <div>
+          <h1>New Booking Request</h1>
+          <p>Request a campus resource for your event or meeting</p>
+        </div>
+        <button className="btn btn-secondary" onClick={() => navigate('/bookings')}>← Back</button>
       </div>
 
       <div className="form-container">
         <form onSubmit={handleSubmit}>
+
+          {/* ── Resource & Details ── */}
           <div className="form-section">
             <h3>Resource Details</h3>
-            
+
             <div className="form-group">
               <label htmlFor="resourceId">Resource *</label>
               <select
@@ -81,19 +109,20 @@ const BookingFormPage = () => {
                 required
               >
                 <option value="">Select a resource...</option>
-                <option value="1">Lab A101</option>
-                <option value="2">Lab B202</option>
-                <option value="3">Lecture Hall C101</option>
-                <option value="4">Lecture Hall D201</option>
-                <option value="5">Meeting Room E101</option>
-                <option value="6">Meeting Room E102</option>
-                <option value="7">Portable Projector #1</option>
-                <option value="9">Conference Hall F001</option>
+                {resourcesLoading ? (
+                  <option disabled>Loading resources...</option>
+                ) : (
+                  resources.map(r => (
+                    <option key={r.id} value={r.id}>
+                      {r.name} — {r.location} {r.capacity ? `(cap: ${r.capacity})` : ''}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="title">Title *</label>
+              <label htmlFor="title">Booking Title *</label>
               <input
                 id="title"
                 type="text"
@@ -123,12 +152,13 @@ const BookingFormPage = () => {
             </div>
           </div>
 
+          {/* ── Booking Details ── */}
           <div className="form-section">
-            <h3>Booking Details</h3>
-            
+            <h3>Date & Time</h3>
+
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="bookingDate">Booking Date *</label>
+                <label htmlFor="bookingDate">Date *</label>
                 <input
                   id="bookingDate"
                   type="date"
@@ -142,6 +172,23 @@ const BookingFormPage = () => {
               </div>
 
               <div className="form-group">
+                <label htmlFor="attendees">Attendees *</label>
+                <input
+                  id="attendees"
+                  type="number"
+                  name="attendees"
+                  value={formData.attendees}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  min="1"
+                  max="500"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
                 <label htmlFor="startTime">Start Time *</label>
                 <input
                   id="startTime"
@@ -153,7 +200,6 @@ const BookingFormPage = () => {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label htmlFor="endTime">End Time *</label>
                 <input
@@ -168,6 +214,7 @@ const BookingFormPage = () => {
               </div>
             </div>
 
+            {/* Real-time availability check */}
             {formData.resourceId && formData.bookingDate && formData.startTime && formData.endTime && (
               <AvailabilityChecker
                 resourceId={formData.resourceId}
@@ -178,20 +225,26 @@ const BookingFormPage = () => {
               />
             )}
 
-            <div className="form-group">
-              <label htmlFor="attendees">Number of Attendees *</label>
-              <input
-                id="attendees"
-                type="number"
-                name="attendees"
-                value={formData.attendees}
-                onChange={handleInputChange}
-                className="form-control"
-                min="1"
-                max="500"
-                required
+            {/* Visual slot calendar */}
+            {formData.resourceId && formData.bookingDate && (
+              <div className="calendar-toggle-row">
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={() => setShowCalendar(v => !v)}
+                >
+                  {showCalendar ? '🗕 Hide Calendar' : '📅 View Available Slots'}
+                </button>
+              </div>
+            )}
+
+            {showCalendar && formData.resourceId && formData.bookingDate && (
+              <AvailabilityCalendar
+                resourceId={formData.resourceId}
+                bookingDate={formData.bookingDate}
+                onSlotSelect={handleSlotSelect}
               />
-            </div>
+            )}
           </div>
 
           {submitError && <div className="alert alert-danger">{submitError}</div>}
@@ -209,7 +262,7 @@ const BookingFormPage = () => {
               className="btn btn-primary btn-lg"
               disabled={isLoading || !isAvailable}
             >
-              {isLoading ? 'Creating...' : 'Submit Booking Request'}
+              {isLoading ? 'Submitting...' : '📤 Submit Booking Request'}
             </button>
           </div>
         </form>

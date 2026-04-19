@@ -1,36 +1,61 @@
-import React, { useState } from 'react';
-import { createBooking } from '../../api/bookingsApi';
+import React, { useState, useEffect } from 'react';
+import { createBooking, updateBooking } from '../../api/bookingsApi';
+import { getAllResources } from '../../api/resourcesApi';
 import AvailabilityChecker from './AvailabilityChecker';
-import { checkAvailability } from '../../api/bookingsApi';
+import AvailabilityCalendar from './AvailabilityCalendar';
 
 /**
- * BookingFormModal — Modal popup for creating a new booking
+ * BookingFormModal — Modal for CREATING or EDITING a booking.
+ *
+ * Props:
+ *   onClose      – () => void
+ *   onSuccess    – () => void
+ *   editBooking  – (optional) existing booking object to pre-populate for edit mode
  */
-const BookingFormModal = ({ onClose, onSuccess }) => {
+const BookingFormModal = ({ onClose, onSuccess, editBooking }) => {
+  const isEditMode = !!editBooking;
+
   const [formData, setFormData] = useState({
-    resourceId: '',
-    title: '',
-    purpose: '',
-    bookingDate: '',
-    startTime: '',
-    endTime: '',
-    attendees: 1
+    resourceId: editBooking?.resourceId || '',
+    title: editBooking?.title || '',
+    purpose: editBooking?.purpose || '',
+    bookingDate: editBooking?.bookingDate || '',
+    startTime: editBooking?.startTime || '',
+    endTime: editBooking?.endTime || '',
+    attendees: editBooking?.attendees || 1,
   });
+
+  const [resources, setResources] = useState([]);
+  const [resourcesLoading, setResourcesLoading] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Load active resources for the dropdown
+  useEffect(() => {
+    getAllResources({ status: 'ACTIVE', size: 100 })
+      .then(res => {
+        const data = res.data?.data?.content || res.data?.data || [];
+        setResources(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setResources([]))
+      .finally(() => setResourcesLoading(false));
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Called by AvailabilityCalendar when user clicks a slot
+  const handleSlotSelect = (startTime, endTime) => {
+    setFormData(prev => ({ ...prev, startTime, endTime }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isAvailable) {
       setError('Selected time slot is not available. Please choose a different time.');
       return;
@@ -40,12 +65,20 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      const response = await createBooking(formData);
-      if (response.data.success) {
-        onSuccess();
+      const payload = {
+        ...formData,
+        resourceId: Number(formData.resourceId),
+        attendees: Number(formData.attendees),
+      };
+
+      if (isEditMode) {
+        await updateBooking(editBooking.id, payload);
+      } else {
+        await createBooking(payload);
       }
+      onSuccess();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create booking');
+      setError(err.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} booking`);
     } finally {
       setIsLoading(false);
     }
@@ -55,17 +88,19 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-card modal-card-wide" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
         <div className="modal-header">
-          <h2>New Booking Request</h2>
-          <button className="close-btn" onClick={onClose}>&times;</button>
+          <h2>{isEditMode ? '✏️ Edit Booking' : '📋 New Booking Request'}</h2>
+          <button className="close-btn" onClick={onClose} type="button">&times;</button>
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
+          {/* Resource */}
           <div className="form-group">
-            <label htmlFor="resourceId">Resource *</label>
+            <label htmlFor="modal-resourceId">Resource *</label>
             <select
-              id="resourceId"
+              id="modal-resourceId"
               name="resourceId"
               value={formData.resourceId}
               onChange={handleInputChange}
@@ -73,21 +108,23 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
               required
             >
               <option value="">Select a resource...</option>
-              <option value="1">Lab A101</option>
-              <option value="2">Lab B202</option>
-              <option value="3">Lecture Hall C101</option>
-              <option value="4">Lecture Hall D201</option>
-              <option value="5">Meeting Room E101</option>
-              <option value="6">Meeting Room E102</option>
-              <option value="7">Portable Projector #1</option>
-              <option value="9">Conference Hall F001</option>
+              {resourcesLoading ? (
+                <option disabled>Loading resources...</option>
+              ) : (
+                resources.map(r => (
+                  <option key={r.id} value={r.id}>
+                    {r.name} — {r.location} {r.capacity ? `(cap: ${r.capacity})` : ''}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
+          {/* Title */}
           <div className="form-group">
-            <label htmlFor="title">Title *</label>
+            <label htmlFor="modal-title">Title *</label>
             <input
-              id="title"
+              id="modal-title"
               type="text"
               name="title"
               value={formData.title}
@@ -99,26 +136,28 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
             />
           </div>
 
+          {/* Purpose */}
           <div className="form-group">
-            <label htmlFor="purpose">Purpose *</label>
+            <label htmlFor="modal-purpose">Purpose *</label>
             <textarea
-              id="purpose"
+              id="modal-purpose"
               name="purpose"
               value={formData.purpose}
               onChange={handleInputChange}
               className="form-control"
-              placeholder="Describe the purpose..."
+              placeholder="Describe the purpose of your booking..."
               rows="2"
               maxLength={1000}
               required
             />
           </div>
 
+          {/* Date + Attendees row */}
           <div className="form-row-compact">
             <div className="form-group">
-              <label htmlFor="bookingDate">Date *</label>
+              <label htmlFor="modal-bookingDate">Date *</label>
               <input
-                id="bookingDate"
+                id="modal-bookingDate"
                 type="date"
                 name="bookingDate"
                 value={formData.bookingDate}
@@ -128,11 +167,28 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
                 required
               />
             </div>
-
             <div className="form-group">
-              <label htmlFor="startTime">Start *</label>
+              <label htmlFor="modal-attendees">Attendees *</label>
               <input
-                id="startTime"
+                id="modal-attendees"
+                type="number"
+                name="attendees"
+                value={formData.attendees}
+                onChange={handleInputChange}
+                className="form-control"
+                min="1"
+                max="500"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Time row */}
+          <div className="form-row-compact">
+            <div className="form-group">
+              <label htmlFor="modal-startTime">Start Time *</label>
+              <input
+                id="modal-startTime"
                 type="time"
                 name="startTime"
                 value={formData.startTime}
@@ -141,11 +197,10 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
                 required
               />
             </div>
-
             <div className="form-group">
-              <label htmlFor="endTime">End *</label>
+              <label htmlFor="modal-endTime">End Time *</label>
               <input
-                id="endTime"
+                id="modal-endTime"
                 type="time"
                 name="endTime"
                 value={formData.endTime}
@@ -156,6 +211,7 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
             </div>
           </div>
 
+          {/* Availability real-time check */}
           {formData.resourceId && formData.bookingDate && formData.startTime && formData.endTime && (
             <AvailabilityChecker
               resourceId={formData.resourceId}
@@ -166,30 +222,32 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
             />
           )}
 
-          <div className="form-group">
-            <label htmlFor="attendees">Attendees *</label>
-            <input
-              id="attendees"
-              type="number"
-              name="attendees"
-              value={formData.attendees}
-              onChange={handleInputChange}
-              className="form-control"
-              min="1"
-              max="500"
-              required
+          {/* Visual Calendar toggle */}
+          {formData.resourceId && formData.bookingDate && (
+            <div className="calendar-toggle-row">
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => setShowCalendar(v => !v)}
+              >
+                {showCalendar ? '🗕 Hide Calendar' : '📅 View Slot Calendar'}
+              </button>
+            </div>
+          )}
+
+          {showCalendar && formData.resourceId && formData.bookingDate && (
+            <AvailabilityCalendar
+              resourceId={formData.resourceId}
+              bookingDate={formData.bookingDate}
+              onSlotSelect={handleSlotSelect}
+              excludeId={isEditMode ? editBooking.id : null}
             />
-          </div>
+          )}
 
           {error && <div className="alert alert-danger">{error}</div>}
 
           <div className="modal-footer-compact">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-              disabled={isLoading}
-            >
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={isLoading}>
               Cancel
             </button>
             <button
@@ -197,7 +255,9 @@ const BookingFormModal = ({ onClose, onSuccess }) => {
               className="btn btn-primary"
               disabled={isLoading || !isAvailable}
             >
-              {isLoading ? 'Creating...' : 'Submit Request'}
+              {isLoading
+                ? (isEditMode ? 'Saving...' : 'Creating...')
+                : (isEditMode ? '💾 Save Changes' : '📤 Submit Request')}
             </button>
           </div>
         </form>

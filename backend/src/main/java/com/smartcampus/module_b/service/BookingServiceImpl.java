@@ -9,6 +9,8 @@ import com.smartcampus.module_b.exception.BookingConflictException;
 import com.smartcampus.module_b.exception.InvalidBookingStatusException;
 import com.smartcampus.module_b.exception.ResourceNotAvailableException;
 import com.smartcampus.module_b.repository.BookingRepository;
+import com.smartcampus.module_a.repository.ResourceRepository;
+import com.smartcampus.module_a.enums.ResourceStatus;
 import com.smartcampus.module_d.enums.NotificationType;
 import com.smartcampus.module_d.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,30 +32,34 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ConflictCheckService conflictCheckService;
     private final NotificationService notificationService;
-    // TODO: Inject ResourceService when Ranushi provides it
-    // private final ResourceService resourceService;
+    private final ResourceRepository resourceRepository;
+
+    // ──────────────────────────── CREATE ────────────────────────────
 
     @Override
     public BookingResponseDTO createBooking(BookingRequestDTO request, UUID userId, String userEmail) {
-        // Validation: Check if resource exists and is active
-        // TODO: Uncomment when ResourceService is available
-        // if (!resourceService.isResourceActive(request.getResourceId())) {
-        //     throw new ResourceNotAvailableException("Resource is not available for booking");
-        // }
+        // Validate resource exists and is ACTIVE
+        var resource = resourceRepository.findById(request.getResourceId())
+                .orElseThrow(() -> new ResourceNotAvailableException(
+                        "Resource not found: " + request.getResourceId()));
+
+        if (resource.getStatus() != ResourceStatus.ACTIVE) {
+            throw new ResourceNotAvailableException(
+                    "Resource '" + resource.getName() + "' is not available for booking (status: "
+                    + resource.getStatus() + ")");
+        }
 
         // Check for time conflicts
         if (conflictCheckService.hasConflict(
                 request.getResourceId(),
                 request.getBookingDate(),
                 request.getStartTime(),
-                request.getEndTime()
-        )) {
+                request.getEndTime())) {
             throw new BookingConflictException(
-                "This resource is already booked for the requested time slot"
-            );
+                "This resource is already booked for the requested time slot");
         }
 
-        // Create and save the booking
+        // Create and save
         Booking booking = Booking.builder()
                 .resourceId(request.getResourceId())
                 .userId(userId)
@@ -68,32 +73,84 @@ public class BookingServiceImpl implements BookingService {
                 .status(BookingStatus.PENDING)
                 .build();
 
-        Booking savedBooking = bookingRepository.save(booking);
+        Booking saved = bookingRepository.save(booking);
 
-        // Trigger notification
         notificationService.createNotification(
             userId,
             "Booking Request Submitted",
-            "Your booking request has been submitted and is pending admin review.",
-            NotificationType.BOOKING_CREATED
-        );
+            "Your booking for '" + resource.getName() + "' on " + request.getBookingDate() + " is pending review.",
+            NotificationType.BOOKING_CREATED);
 
-        return mapToResponseDTO(savedBooking);
+        return mapToResponseDTO(saved, resource.getName());
     }
+
+    // ──────────────────────────── UPDATE (CRUD) ────────────────────────────
+
+    @Override
+    public BookingResponseDTO updateBooking(Long id, BookingRequestDTO request, UUID userId) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        // Ownership check
+        if (!booking.getUserId().equals(userId)) {
+            throw new RuntimeException("You can only edit your own bookings");
+        }
+
+        // Only PENDING bookings can be edited
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new InvalidBookingStatusException(
+                "Only PENDING bookings can be edited. Current status: " + booking.getStatus());
+        }
+
+        // Validate target resource
+        var resource = resourceRepository.findById(request.getResourceId())
+                .orElseThrow(() -> new ResourceNotAvailableException(
+                        "Resource not found: " + request.getResourceId()));
+
+        if (resource.getStatus() != ResourceStatus.ACTIVE) {
+            throw new ResourceNotAvailableException(
+                    "Resource '" + resource.getName() + "' is not available for booking");
+        }
+
+        // Conflict check — exclude this booking's own ID so it doesn't conflict with itself
+        if (conflictCheckService.hasConflict(
+                request.getResourceId(),
+                request.getBookingDate(),
+                request.getStartTime(),
+                request.getEndTime(),
+                id)) {
+            throw new BookingConflictException(
+                "The updated time slot conflicts with an existing approved booking");
+        }
+
+        // Apply updates
+        booking.setResourceId(request.getResourceId());
+        booking.setTitle(request.getTitle());
+        booking.setPurpose(request.getPurpose());
+        booking.setBookingDate(request.getBookingDate());
+        booking.setStartTime(request.getStartTime());
+        booking.setEndTime(request.getEndTime());
+        booking.setAttendees(request.getAttendees() != null ? request.getAttendees() : 1);
+
+        Booking updated = bookingRepository.save(booking);
+        return mapToResponseDTO(updated, resource.getName());
+    }
+
+    // ──────────────────────────── READ ────────────────────────────
 
     @Override
     public List<BookingResponseDTO> getMyBookings(UUID userId, BookingStatus statusFilter) {
-        List<Booking> bookings = bookingRepository.findByUserIdWithStatusFilter(userId, statusFilter);
-        return bookings.stream()
-                .map(this::mapToResponseDTO)
+        return bookingRepository.findByUserIdWithStatusFilter(userId, statusFilter)
+                .stream()
+                .map(this::mapToResponseDTOWithResourceLookup)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BookingResponseDTO> getAllBookings(BookingStatus status, Long resourceId) {
-        List<Booking> bookings = bookingRepository.findAllWithFilters(status, resourceId);
-        return bookings.stream()
-                .map(this::mapToResponseDTO)
+        return bookingRepository.findAllWithFilters(status, resourceId)
+                .stream()
+                .map(this::mapToResponseDTOWithResourceLookup)
                 .collect(Collectors.toList());
     }
 
@@ -101,108 +158,111 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDTO getBookingById(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-        return mapToResponseDTO(booking);
+        return mapToResponseDTOWithResourceLookup(booking);
     }
+
+    // ──────────────────────────── ADMIN REVIEW ────────────────────────────
 
     @Override
     public BookingResponseDTO reviewBooking(Long id, BookingReviewDTO request, UUID adminId) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        // Validate status transition: only PENDING bookings can be reviewed
         if (booking.getStatus() != BookingStatus.PENDING) {
             throw new InvalidBookingStatusException(
-                "Booking can only be reviewed when status is PENDING"
-            );
+                "Booking can only be reviewed when status is PENDING");
         }
 
-        // Validate action: only APPROVED or REJECTED allowed
-        if (request.getAction() != BookingStatus.APPROVED && 
+        if (request.getAction() != BookingStatus.APPROVED &&
             request.getAction() != BookingStatus.REJECTED) {
             throw new InvalidBookingStatusException(
-                "Action must be either APPROVED or REJECTED"
-            );
+                "Action must be either APPROVED or REJECTED");
         }
 
-        // If rejecting, admin note is recommended (but not required)
         booking.setStatus(request.getAction());
         booking.setAdminNote(request.getAdminNote());
         booking.setReviewedBy(adminId);
         booking.setReviewedAt(OffsetDateTime.now());
 
-        Booking updatedBooking = bookingRepository.save(booking);
+        Booking updated = bookingRepository.save(booking);
 
-        // Trigger notification based on action
+        String resourceName = resourceRepository.findById(booking.getResourceId())
+                .map(r -> r.getName())
+                .orElse("Resource " + booking.getResourceId());
+
         if (request.getAction() == BookingStatus.APPROVED) {
             notificationService.createNotification(
                 booking.getUserId(),
                 "Booking Approved",
-                "Your booking has been approved.",
-                NotificationType.BOOKING_APPROVED
-            );
+                "Your booking for '" + resourceName + "' on " + booking.getBookingDate() + " has been approved.",
+                NotificationType.BOOKING_APPROVED);
         } else {
             notificationService.createNotification(
                 booking.getUserId(),
                 "Booking Rejected",
-                "Your booking has been rejected. Reason: " + (request.getAdminNote() != null ? request.getAdminNote() : "No reason provided"),
-                NotificationType.BOOKING_REJECTED
-            );
+                "Your booking for '" + resourceName + "' was rejected. Reason: "
+                    + (request.getAdminNote() != null ? request.getAdminNote() : "No reason provided"),
+                NotificationType.BOOKING_REJECTED);
         }
 
-        return mapToResponseDTO(updatedBooking);
+        return mapToResponseDTOWithResourceLookup(updated);
     }
+
+    // ──────────────────────────── CANCEL ────────────────────────────
 
     @Override
     public void cancelBooking(Long id, UUID userId) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        // Check ownership: user can only cancel their own bookings
         if (!booking.getUserId().equals(userId)) {
             throw new RuntimeException("You can only cancel your own bookings");
         }
 
-        // Check if booking can be cancelled: must be PENDING or APPROVED, and date must be future/today
-        if (booking.getStatus() != BookingStatus.PENDING && 
+        if (booking.getStatus() != BookingStatus.PENDING &&
             booking.getStatus() != BookingStatus.APPROVED) {
             throw new InvalidBookingStatusException(
-                "Only PENDING or APPROVED bookings can be cancelled"
-            );
+                "Only PENDING or APPROVED bookings can be cancelled");
         }
 
-        // Check if booking date is in future or today
         if (booking.getBookingDate().isBefore(LocalDate.now())) {
             throw new InvalidBookingStatusException(
-                "Cannot cancel bookings for past dates"
-            );
+                "Cannot cancel bookings for past dates");
         }
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
     }
 
+    // ──────────────────────────── AVAILABILITY CHECK ────────────────────────────
+
     @Override
-    public boolean checkAvailability(Long resourceId, String bookingDateStr, 
+    public boolean checkAvailability(Long resourceId, String bookingDateStr,
                                      String startTimeStr, String endTimeStr) {
         try {
             LocalDate bookingDate = LocalDate.parse(bookingDateStr);
             LocalTime startTime = LocalTime.parse(startTimeStr);
             LocalTime endTime = LocalTime.parse(endTimeStr);
-
             return !conflictCheckService.hasConflict(resourceId, bookingDate, startTime, endTime);
         } catch (Exception e) {
             throw new RuntimeException("Invalid date or time format", e);
         }
     }
 
-    /**
-     * Helper method to convert Booking entity to ResponseDTO
-     */
-    private BookingResponseDTO mapToResponseDTO(Booking booking) {
+    // ──────────────────────────── HELPERS ────────────────────────────
+
+    private BookingResponseDTO mapToResponseDTOWithResourceLookup(Booking booking) {
+        String resourceName = resourceRepository.findById(booking.getResourceId())
+                .map(r -> r.getName())
+                .orElse("Resource " + booking.getResourceId());
+        return mapToResponseDTO(booking, resourceName);
+    }
+
+    private BookingResponseDTO mapToResponseDTO(Booking booking, String resourceName) {
         return BookingResponseDTO.builder()
                 .id(booking.getId())
                 .resourceId(booking.getResourceId())
-                .resourceName("Resource " + booking.getResourceId()) // TODO: Get actual resource name from ResourceService
+                .resourceName(resourceName)
                 .userId(booking.getUserId())
                 .userEmail(booking.getUserEmail())
                 .title(booking.getTitle())

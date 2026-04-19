@@ -1,5 +1,8 @@
 package com.smartcampus.module_b.service;
 
+import com.smartcampus.module_a.entity.Resource;
+import com.smartcampus.module_a.enums.ResourceStatus;
+import com.smartcampus.module_a.repository.ResourceRepository;
 import com.smartcampus.module_b.dto.BookingRequestDTO;
 import com.smartcampus.module_b.dto.BookingResponseDTO;
 import com.smartcampus.module_b.dto.BookingReviewDTO;
@@ -7,6 +10,7 @@ import com.smartcampus.module_b.entity.Booking;
 import com.smartcampus.module_b.enums.BookingStatus;
 import com.smartcampus.module_b.exception.BookingConflictException;
 import com.smartcampus.module_b.exception.InvalidBookingStatusException;
+import com.smartcampus.module_b.exception.ResourceNotAvailableException;
 import com.smartcampus.module_b.repository.BookingRepository;
 import com.smartcampus.module_d.service.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,15 +43,25 @@ class BookingServiceImplTest {
     @Mock
     private NotificationService notificationService;
 
+    @Mock
+    private ResourceRepository resourceRepository;   // ← required for new resource validation
+
     @InjectMocks
     private BookingServiceImpl bookingService;
 
     private UUID testUserId;
     private Booking sampleBooking;
+    private Resource sampleResource;
 
     @BeforeEach
     void setUp() {
         testUserId = UUID.randomUUID();
+
+        sampleResource = new Resource();
+        sampleResource.setId(1L);
+        sampleResource.setName("Lab A101");
+        sampleResource.setStatus(ResourceStatus.ACTIVE);
+
         sampleBooking = Booking.builder()
                 .id(1L)
                 .resourceId(1L)
@@ -65,6 +79,8 @@ class BookingServiceImplTest {
                 .build();
     }
 
+    // ─── CREATE ──────────────────────────────────────────────────────────
+
     @Test
     @DisplayName("Should create booking successfully when no conflicts")
     void createBooking_Success() {
@@ -77,6 +93,7 @@ class BookingServiceImplTest {
         request.setEndTime(LocalTime.of(12, 0));
         request.setAttendees(5);
 
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
         when(conflictCheckService.hasConflict(any(), any(), any(), any())).thenReturn(false);
         when(bookingRepository.save(any(Booking.class))).thenReturn(sampleBooking);
 
@@ -85,6 +102,7 @@ class BookingServiceImplTest {
         assertNotNull(result);
         assertEquals("PAF Group Meeting", result.getTitle());
         assertEquals(BookingStatus.PENDING, result.getStatus());
+        assertEquals("Lab A101", result.getResourceName());
         verify(bookingRepository, times(1)).save(any(Booking.class));
     }
 
@@ -97,22 +115,119 @@ class BookingServiceImplTest {
         request.setStartTime(LocalTime.of(10, 0));
         request.setEndTime(LocalTime.of(12, 0));
 
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
         when(conflictCheckService.hasConflict(any(), any(), any(), any())).thenReturn(true);
 
-        assertThrows(BookingConflictException.class, () -> {
-            bookingService.createBooking(request, testUserId, "test@sliit.lk");
-        });
+        assertThrows(BookingConflictException.class, () ->
+            bookingService.createBooking(request, testUserId, "test@sliit.lk"));
     }
+
+    @Test
+    @DisplayName("Should throw ResourceNotAvailableException for inactive resource")
+    void createBooking_InactiveResource() {
+        sampleResource.setStatus(ResourceStatus.OUT_OF_SERVICE);
+
+        BookingRequestDTO request = new BookingRequestDTO();
+        request.setResourceId(1L);
+        request.setBookingDate(LocalDate.now().plusDays(1));
+        request.setStartTime(LocalTime.of(10, 0));
+        request.setEndTime(LocalTime.of(12, 0));
+
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
+
+        assertThrows(ResourceNotAvailableException.class, () ->
+            bookingService.createBooking(request, testUserId, "test@sliit.lk"));
+    }
+
+    // ─── UPDATE ──────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Should update PENDING booking successfully")
+    void updateBooking_Success() {
+        BookingRequestDTO request = new BookingRequestDTO();
+        request.setResourceId(1L);
+        request.setTitle("Updated Title");
+        request.setPurpose("Updated purpose");
+        request.setBookingDate(LocalDate.now().plusDays(2));
+        request.setStartTime(LocalTime.of(14, 0));
+        request.setEndTime(LocalTime.of(16, 0));
+        request.setAttendees(8);
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
+        when(conflictCheckService.hasConflict(any(), any(), any(), any(), any())).thenReturn(false);
+        when(bookingRepository.save(any(Booking.class))).thenReturn(sampleBooking);
+
+        BookingResponseDTO result = bookingService.updateBooking(1L, request, testUserId);
+
+        assertNotNull(result);
+        verify(bookingRepository, times(1)).save(any(Booking.class));
+    }
+
+    @Test
+    @DisplayName("Should throw when updating non-PENDING booking")
+    void updateBooking_NotPending() {
+        sampleBooking.setStatus(BookingStatus.APPROVED);
+
+        BookingRequestDTO request = new BookingRequestDTO();
+        request.setResourceId(1L);
+        request.setBookingDate(LocalDate.now().plusDays(2));
+        request.setStartTime(LocalTime.of(14, 0));
+        request.setEndTime(LocalTime.of(16, 0));
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
+
+        assertThrows(InvalidBookingStatusException.class, () ->
+            bookingService.updateBooking(1L, request, testUserId));
+    }
+
+    @Test
+    @DisplayName("Should throw when updating another user's booking")
+    void updateBooking_NotOwner() {
+        UUID otherUser = UUID.randomUUID();
+
+        BookingRequestDTO request = new BookingRequestDTO();
+        request.setResourceId(1L);
+        request.setBookingDate(LocalDate.now().plusDays(1));
+        request.setStartTime(LocalTime.of(10, 0));
+        request.setEndTime(LocalTime.of(12, 0));
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
+
+        assertThrows(RuntimeException.class, () ->
+            bookingService.updateBooking(1L, request, otherUser));
+    }
+
+    @Test
+    @DisplayName("Should throw BookingConflictException when updated slot conflicts")
+    void updateBooking_Conflict() {
+        BookingRequestDTO request = new BookingRequestDTO();
+        request.setResourceId(1L);
+        request.setBookingDate(LocalDate.now().plusDays(1));
+        request.setStartTime(LocalTime.of(10, 0));
+        request.setEndTime(LocalTime.of(12, 0));
+
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
+        when(conflictCheckService.hasConflict(any(), any(), any(), any(), any())).thenReturn(true);
+
+        assertThrows(BookingConflictException.class, () ->
+            bookingService.updateBooking(1L, request, testUserId));
+    }
+
+    // ─── READ ─────────────────────────────────────────────────────────────
 
     @Test
     @DisplayName("Should get booking by ID successfully")
     void getBookingById_Success() {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
 
         BookingResponseDTO result = bookingService.getBookingById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
+        assertEquals("Lab A101", result.getResourceName());
     }
 
     @Test
@@ -120,10 +235,11 @@ class BookingServiceImplTest {
     void getBookingById_NotFound() {
         when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> {
-            bookingService.getBookingById(999L);
-        });
+        assertThrows(RuntimeException.class, () ->
+            bookingService.getBookingById(999L));
     }
+
+    // ─── REVIEW (ADMIN) ───────────────────────────────────────────────────
 
     @Test
     @DisplayName("Should approve pending booking successfully")
@@ -135,6 +251,7 @@ class BookingServiceImplTest {
         UUID adminId = UUID.randomUUID();
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
         when(bookingRepository.save(any(Booking.class))).thenReturn(sampleBooking);
+        when(resourceRepository.findById(1L)).thenReturn(Optional.of(sampleResource));
 
         BookingResponseDTO result = bookingService.reviewBooking(1L, review, adminId);
 
@@ -152,13 +269,14 @@ class BookingServiceImplTest {
 
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
 
-        assertThrows(InvalidBookingStatusException.class, () -> {
-            bookingService.reviewBooking(1L, review, UUID.randomUUID());
-        });
+        assertThrows(InvalidBookingStatusException.class, () ->
+            bookingService.reviewBooking(1L, review, UUID.randomUUID()));
     }
 
+    // ─── CANCEL ───────────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Should cancel own booking successfully")
+    @DisplayName("Should cancel own PENDING booking successfully")
     void cancelBooking_Success() {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
 
@@ -167,18 +285,19 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should throw when cancelling other user's booking")
+    @DisplayName("Should throw when cancelling another user's booking")
     void cancelBooking_NotOwner() {
         UUID otherUserId = UUID.randomUUID();
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(sampleBooking));
 
-        assertThrows(RuntimeException.class, () -> {
-            bookingService.cancelBooking(1L, otherUserId);
-        });
+        assertThrows(RuntimeException.class, () ->
+            bookingService.cancelBooking(1L, otherUserId));
     }
 
+    // ─── AVAILABILITY ─────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Should check availability correctly")
+    @DisplayName("Should return true when slot is available")
     void checkAvailability_Available() {
         when(conflictCheckService.hasConflict(any(), any(), any(), any())).thenReturn(false);
 
@@ -188,7 +307,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Should return false when slot not available")
+    @DisplayName("Should return false when slot is not available")
     void checkAvailability_NotAvailable() {
         when(conflictCheckService.hasConflict(any(), any(), any(), any())).thenReturn(true);
 
