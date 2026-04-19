@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { getCurrentUser } from '../utils/axiosInstance';
+import AdminDashboard from '../components/dashboard/AdminDashboard';
 
 export default function UserProfilePage() {
     const currentUser = getCurrentUser();
@@ -8,6 +9,8 @@ export default function UserProfilePage() {
     if (!currentUser?.email) {
         return <Navigate to="/login" replace />;
     }
+
+    const isAdmin = currentUser?.role === 'ADMIN';
 
     return (
         <div className="profile-page">
@@ -60,6 +63,9 @@ export default function UserProfilePage() {
                         </div>
                     )}
                 </div>
+
+                {/* Admin-only System Overview Dashboard */}
+                {isAdmin && <AdminDashboard />}
             </div>
         </div>
     );
